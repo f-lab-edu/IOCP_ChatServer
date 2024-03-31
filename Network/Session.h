@@ -21,12 +21,13 @@ public:
 	void Connect(std::string ip, int port);
 	void Send(Packet p);
 private:
-	void OnConnected();
-	void OnSend(int sendSize);
 	int OnRecv();
-	void OnDisconnect();
 
-	virtual void OnAssemblePacket(Packet packet) {};
+	virtual void OnConnected() {};
+	virtual void OnSend(int sendSize) {};
+	virtual void OnDisconnect() {};
+	
+	virtual void OnAssemblePacket(Packet& packet) {};
 public:
 	SOCKET GetSocket() { return _socket; }
 	RingBuffer* GetRecvBuffer() { return &_recvBuffer; }

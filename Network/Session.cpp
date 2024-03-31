@@ -181,20 +181,6 @@ void Session::Send(Packet p)
 		RegisterSend();
 }
 
-void Session::OnConnected()
-{
-
-	string tmp = "AAAAA";
-	Packet p;
-	p.startPacket(0);
-	p.push(tmp);
-	p.endPacket(0);
-	Send(p);
-}
-
-void Session::OnSend(int sendSize)
-{
-}
 
 int Session::OnRecv()
 {
@@ -221,8 +207,4 @@ int Session::OnRecv()
 
 	return processLen;
 
-}
-
-void Session::OnDisconnect()
-{
 }
