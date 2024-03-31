@@ -39,9 +39,12 @@ private:
 
 	IoEvent _connectEvent;
 	IoEvent _recvEvent;
+
 	SendEvent _sendEvent;
+	bool _isSendRegister;
+	queue<Packet> _sendRegisteredPacket;
+	mutex _sendLock;
+
 	RingBuffer _recvBuffer;
-
-
 };
 

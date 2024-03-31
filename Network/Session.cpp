@@ -43,6 +43,39 @@ bool Session::RegisterDisconnect()
 
 void Session::RegisterSend()
 {
+
+
+	_sendEvent.Init();
+	_sendEvent.owner = shared_from_this();
+	_sendEvent.thread_id = LThreadId;
+
+	while (_sendRegisteredPacket.size() < 0)
+	{
+		Packet p = _sendRegisteredPacket.front();
+		WSABUF buf;
+		buf.buf = p.GetBuffer();
+		buf.len = p.GetSize();
+		
+		_sendRegisteredPacket.pop();
+
+		_sendEvent.buffers.push_back(buf);
+	}
+
+	DWORD numOfBytes = 0;
+	if (SOCKET_ERROR == ::WSASend(_socket, _sendEvent.buffers.data(), _sendEvent.buffers.size(), &numOfBytes, 0, &_sendEvent, nullptr))
+	{
+
+		int errorCode = ::WSAGetLastError();
+
+		if (errorCode != ERROR_IO_PENDING)
+		{
+			std::cout << "wsaError: " << errorCode << std::endl;
+			return;
+		}
+	}
+
+
+	_isSendRegister = false;
 }
 
 void Session::RegisterRecv()
@@ -71,7 +104,6 @@ void Session::RegisterRecv()
 
 void Session::CompletedConnect()
 {
-
 	RegisterRecv();
 	OnConnected();
 }
@@ -136,27 +168,18 @@ void Session::Connect(std::string ip, int port)
 
 void Session::Send(Packet p)
 {
+
+	bool Flush = false;
 	
-	WSABUF wsaBuf;
-	::memset(&wsaBuf, 0, sizeof(WSABUF));
-	wsaBuf.buf = p.GetBuffer();
-	wsaBuf.len = p.GetSize();
+	_sendLock.lock();
+	
+	_sendRegisteredPacket.push(p);
 
-	// 현재는 send가 동시에 여러번 발생하지 않는다고 가정하고 life-cycle을 가져갔습니다. send가 동시에 여러번 trigger 될 수 있게 고치려면 어떻게 해야 될지 판단해주세요.
-	_sendEvent.Init();
-	_sendEvent.owner = shared_from_this();
-	_sendEvent.thread_id = LThreadId;
+	if (exchange(_isSendRegister, true) == false)
+		Flush = true;
 
-	DWORD numOfBytes = 0;
-	if (SOCKET_ERROR == ::WSASend(_socket, &wsaBuf, 1, & numOfBytes, 0, &_sendEvent, nullptr)) {
-		
-		int errorCode = ::WSAGetLastError();
-
-		if (errorCode != ERROR_IO_PENDING) {
-			std::cout << "wsaError: " << errorCode << std::endl;
-			return;
-		}
-	}
+	if (Flush == true)
+		RegisterSend();
 }
 
 void Session::OnConnected()

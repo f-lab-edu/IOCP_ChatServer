@@ -42,4 +42,5 @@ public:
 
 public:
 	int thread_id;
+	vector<WSABUF> buffers;
 };
