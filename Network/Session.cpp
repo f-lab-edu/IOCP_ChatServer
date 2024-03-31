@@ -74,8 +74,6 @@ void Session::RegisterSend()
 		}
 	}
 
-
-	_isSendRegister = false;
 }
 
 void Session::RegisterRecv()
@@ -111,6 +109,7 @@ void Session::CompletedConnect()
 void Session::CompletedSend(int thread_id, int sizeOfBytes)
 {
 	OnSend(sizeOfBytes);
+	_isSendRegister = false;
 	GThreadManager->RenewalBuffer(thread_id, sizeOfBytes);
 }
 
