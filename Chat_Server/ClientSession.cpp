@@ -1,9 +1,13 @@
 #include "stdafx.h"
 #include "ClientSession.h"
 
-void ClientSession::OnConnected()
+ClientSession::ClientSession(HANDLE iocp) : Session::Session(iocp)
 {
 
+}
+
+void ClientSession::OnConnected()
+{
 }
 
 void ClientSession::OnSend(int sendSize)
@@ -14,11 +18,11 @@ void ClientSession::OnDisconnect()
 {
 }
 
-void ClientSession::OnAssemblePacket(Packet& packet)
+void ClientSession::OnAssemblePacket(Packet* packet)
 {
-	Session* session = this;
+	shared_ptr<Session> session = static_pointer_cast<Session>(shared_from_this());
 
-	switch (packet.GetPacketId())
+	switch (packet->GetPacketId())
 	{
 	case Protocol::C2S_ENTER_ROOM:
 		PacketHandler::C2S_ENTER_ROOM_Handler(session, packet);

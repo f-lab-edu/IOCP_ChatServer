@@ -4,7 +4,8 @@
 #include "IoEvent.h"
 #include "IocpObject.h"
 
-Listener::Listener(HANDLE iocpHandle) : _iocpHandle(iocpHandle)
+Listener::Listener(HANDLE iocpHandle, function<shared_ptr<Session>(void)> sessionCreateFunc) : _iocpHandle(iocpHandle)
+	, _sessionCreateFunc(sessionCreateFunc)
 {
 	_listenSocket = ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 
@@ -51,7 +52,7 @@ void Listener::StartAccept(int maxAccept)
 void Listener::RegisterAccept(AcceptEvent* ioEvent)
 {
 	ioEvent->Init();
-	ioEvent->session = std::make_shared<Session>(_iocpHandle);
+	ioEvent->session = _sessionCreateFunc();
 	ULONG_PTR key = 0;
 	CreateIoCompletionPort((HANDLE)ioEvent->session->GetSocket(), _iocpHandle, (ULONG_PTR)&key, 0);
 

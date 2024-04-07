@@ -6,12 +6,24 @@ public:
 	~RingBuffer();
 
 public:
-	char* ReadPos() { return (_buffer + _readPos); }
-	char* WritePos() { return (_buffer + _writePos); }
+	char* ReadPos() { 
+		return (_buffer + _readPos); 
+	}
+	char* WritePos() { 
+		return (_buffer + _writePos); 
+	}
 
-	int RemainSize() { return _bufferSize - _writePos; }
-	int UsedSize() { return _writePos; }
-	int DataSize() { return _writePos - _readPos; }
+	int RemainSize() { 
+		return _bufferSize - _writePos; 
+	}
+	int UsedSize() {
+		return _writePos; 
+	}
+	int DataSize() { 
+		return _writePos - _readPos; 
+	}
+
+	void Clear();
 
 	void CompleteRead(int readByte);
 	void CompleteWrite(int writeByte);

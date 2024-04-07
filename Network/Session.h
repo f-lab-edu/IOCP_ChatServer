@@ -19,7 +19,7 @@ public:
 	void CompletedDisconnect();
 	
 	void Connect(std::string ip, int port);
-	void Send(Packet p);
+	void Send(Packet* p);
 private:
 	int OnRecv();
 
@@ -27,7 +27,7 @@ private:
 	virtual void OnSend(int sendSize) {};
 	virtual void OnDisconnect() {};
 	
-	virtual void OnAssemblePacket(Packet& packet) {};
+	virtual void OnAssemblePacket(Packet* packet) {};
 public:
 	SOCKET GetSocket() { return _socket; }
 	RingBuffer* GetRecvBuffer() { return &_recvBuffer; }
@@ -43,7 +43,7 @@ private:
 
 	SendEvent _sendEvent;
 	bool _isSendRegister;
-	queue<Packet> _sendRegisteredPacket;
+	queue<Packet*> _sendRegisteredPacket;
 	mutex _sendLock;
 
 	RingBuffer _recvBuffer;

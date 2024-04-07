@@ -4,7 +4,7 @@ class Session;
 class Listener : public IocpObject
 {
 public:
-	Listener(HANDLE iocpHandle);
+	Listener(HANDLE iocpHandle, function<shared_ptr<Session>(void)> sessionCreateFunc);
 	~Listener() = default;
 public:
 	virtual void OnExecute(IoEvent* event, int SizeOfBytes) override;
@@ -19,5 +19,7 @@ private:
 
 	SOCKET _listenSocket = INVALID_SOCKET;
 	std::vector<IoEvent*> _acceptEvents;
+
+	function<shared_ptr<Session>(void)> _sessionCreateFunc;
 };
 

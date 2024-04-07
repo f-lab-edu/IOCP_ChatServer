@@ -2,6 +2,7 @@
 
 
 Session::Session(HANDLE iocpHandle) : _iocpHandle(iocpHandle), _recvEvent(EventType::Recv), _connectEvent(EventType::Connect), _recvBuffer(65535)
+	, _isSendRegister(false)
 {
 	_socket = ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 
@@ -43,23 +44,27 @@ bool Session::RegisterDisconnect()
 
 void Session::RegisterSend()
 {
-
+	_sendEvent.buffers.clear();
 
 	_sendEvent.Init();
 	_sendEvent.owner = shared_from_this();
 	_sendEvent.thread_id = LThreadId;
 
-	while (_sendRegisteredPacket.size() < 0)
+	_sendLock.lock();
+
+	while (_sendRegisteredPacket.size() > 0)
 	{
-		Packet p = _sendRegisteredPacket.front();
+		Packet* p = _sendRegisteredPacket.front();
 		WSABUF buf;
-		buf.buf = p.GetBuffer();
-		buf.len = p.GetSize();
+		buf.buf = p->GetBuffer();
+		buf.len = p->GetSize();
 		
 		_sendRegisteredPacket.pop();
 
 		_sendEvent.buffers.push_back(buf);
 	}
+
+	_sendLock.unlock();
 
 	DWORD numOfBytes = 0;
 	if (SOCKET_ERROR == ::WSASend(_socket, _sendEvent.buffers.data(), _sendEvent.buffers.size(), &numOfBytes, 0, &_sendEvent, nullptr))
@@ -93,7 +98,7 @@ void Session::RegisterRecv()
 		int errorCode = ::WSAGetLastError();
 		if (errorCode != ERROR_IO_PENDING) {
 			std::cout << "wsaError: " << errorCode << std::endl;
-			RegisterRecv();
+			//RegisterRecv();
 			// OR Disconnect;
 			return;
 		}
@@ -165,16 +170,16 @@ void Session::Connect(std::string ip, int port)
 
 }
 
-void Session::Send(Packet p)
+void Session::Send(Packet* p)
 {
 
 	bool Flush = false;
 	
 	_sendLock.lock();
-	
 	_sendRegisteredPacket.push(p);
+	_sendLock.unlock();
 
-	if (exchange(_isSendRegister, true) == false)
+ 	if (exchange(_isSendRegister, true) == false)
 		Flush = true;
 
 	if (Flush == true)
@@ -187,22 +192,23 @@ int Session::OnRecv()
 	unsigned char packetHeaderSize = sizeof(PacketHeader);
 	int processLen = 0;
 	char* buffer = _recvBuffer.ReadPos();
+
+	int recvSize = _recvBuffer.DataSize();
 	while (true)
 	{
-		if (_recvBuffer.DataSize() < packetHeaderSize)
+		if (recvSize < packetHeaderSize)
 			break;
 
 		PacketHeader header;
-		memcpy(&header, buffer, packetHeaderSize);
+		memcpy(&header, buffer + processLen, packetHeaderSize);
 
-		if (_recvBuffer.DataSize() < header.size)
+		if (recvSize < header.size)
 			break;
 
-		Packet p(buffer);
+		Packet* p = new Packet(buffer + processLen);
 		OnAssemblePacket(p);
 
 		processLen += header.size;
-		buffer += header.size;
 	}
 
 	return processLen;

@@ -54,7 +54,7 @@ void ThreadManager::JoinAll()
 
 void ThreadManager::RenewalBuffer(int thread_id, int processSize)
 {
-	lock.lock();
+	/*lock.lock();
 	_sendBuffers[thread_id]->CompleteRead(processSize);
-	lock.unlock();
+	lock.unlock();*/
 }

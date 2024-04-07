@@ -5,6 +5,8 @@ DWORD WINAPI EchoThreadMain();
 HANDLE iocpHandle;
 
 int main() {
+	g_Room = new Room();
+
 	WSADATA wsaData;
 	if (0 != ::WSAStartup(MAKEWORD(2, 2), &wsaData))
 		return 0;
@@ -21,7 +23,10 @@ int main() {
 		GThreadManager->ThreadStart(EchoThreadMain);
 
 
-	std::shared_ptr<Listener> listener = std::make_shared<Listener>(iocpHandle);
+	std::shared_ptr<Listener> listener = std::make_shared<Listener>(iocpHandle, [=]()
+		{
+			return make_shared<ClientSession>(iocpHandle);
+		});
 	listener->StartAccept(1);
 
 	GThreadManager->JoinAll();
@@ -36,7 +41,7 @@ DWORD WINAPI EchoThreadMain() {
 		{
 			std::shared_ptr<IocpObject> iocpObject = nullptr;
 			iocpObject = ioEvent->owner;
-			iocpObject->OnExecute(ioEvent, bytesTransffered);
+ 			iocpObject->OnExecute(ioEvent, bytesTransffered);
 		}
 		else {
 		 	int errCode = ::WSAGetLastError();

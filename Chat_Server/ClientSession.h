@@ -1,4 +1,6 @@
 #pragma once
+class Room;
+
 struct UserInfo
 {
 	int userId;
@@ -7,10 +9,17 @@ struct UserInfo
 
 class ClientSession : public Session
 {
+public:
+	ClientSession(HANDLE iocp);
+
+private:
 	void OnConnected() override;
 	void OnSend(int sendSize) override;
 	void OnDisconnect() override;
 
-	virtual void OnAssemblePacket(Packet& packet);
+	void OnAssemblePacket(Packet* packet) override;
+
+public:
+	UserInfo _userInfo;
 };
 

@@ -28,7 +28,7 @@ public:
 	unsigned short GetPacketId() { return _header.packetId; }
 private:
 	PacketHeader _header;
-	char* _data;
+	char _data[65535];
 
 	// 전송할 데이터 끝
 private:
