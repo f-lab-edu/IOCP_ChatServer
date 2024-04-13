@@ -105,18 +105,20 @@ void Session::RegisterSend()
 	{
 		int processSize;
 		Packet* p = _sendRegisteredPacket.front();
-		Buffer* readBuffer = p->GetBuffer();
 
 		WSABUF buf;
-		buf.buf = readBuffer->ReadPos();
+		buf.buf = _sendBuffer->ReadPos();
 		buf.len = p->GetSize();
 		
 		_sendRegisteredPacket.pop();
-		readBuffer->CompleteRead(p->GetSize());
+		_sendBuffer->CompleteRead(p->GetSize());
 
 		_sendEvent.buffers.push_back(buf);
 		_sendCompletePacket.push_back(p);
 	}
+
+	GBufferManager->ReturnBuffer(_sendBuffer);
+	_sendBuffer = nullptr;
 
 	_sendLock.unlock();
 
@@ -169,10 +171,14 @@ void Session::CompletedSend(int thread_id, int sizeOfBytes)
 {
 	OnSend(sizeOfBytes);
 	
+
+
 	for (int i = 0; i < _sendCompletePacket.size(); i++)
 		delete _sendCompletePacket[i];
+
 	_sendCompletePacket.clear();
-	_isSendRegister = false;
+	_isSendRegister.store(false);
+	cout << "Set Register " << false << endl;
 }
 
 void Session::CompletedRecv(int sizeOfBytes)
@@ -207,8 +213,11 @@ void Session::Send(Packet* p)
 	_sendRegisteredPacket.push(p);
 	_sendLock.unlock();
 
- 	if (exchange(_isSendRegister, true) == false)
+	if (_isSendRegister.exchange(true) == false)
+	{
+		cout << "Set Register " << true << endl;
 		Flush = true;
+	}
 
 	if (Flush == true)
 		RegisterSend();
@@ -233,7 +242,7 @@ void Session::SendByCopy(Buffer* packetBuffer)
 	_sendRegisteredPacket.push(p);
 	_sendLock.unlock();
 
-	if (exchange(_isSendRegister, true) == false)
+	if (_isSendRegister.exchange(true) == false)
 		Flush = true;
 
 	if (Flush == true)

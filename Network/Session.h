@@ -49,7 +49,7 @@ private:
 	IoEvent _disconnectEvent;
 
 	SendEvent _sendEvent;
-	bool _isSendRegister;
+	atomic<bool> _isSendRegister;
 	queue<Packet*> _sendRegisteredPacket;
 	vector<Packet*> _sendCompletePacket;
 	mutex _sendLock;

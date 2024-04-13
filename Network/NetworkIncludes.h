@@ -8,6 +8,7 @@
 #include <queue>
 #include <concurrent_queue.h>
 #include <functional>
+#include <atomic>
 
 #include <memory>
 #include <thread>

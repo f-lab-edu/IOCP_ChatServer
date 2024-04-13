@@ -28,3 +28,8 @@ Buffer* BufferManager::AssignBuffer()
 
 	return buf;
 }
+
+void BufferManager::ReturnBuffer(Buffer* buffer)
+{
+	_buffers.push(buffer);
+}
