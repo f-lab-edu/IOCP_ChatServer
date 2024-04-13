@@ -50,7 +50,7 @@ private:
 
 	SendEvent _sendEvent;
 	atomic<bool> _isSendRegister;
-	queue<Packet*> _sendRegisteredPacket;
+	concurrent_queue<Packet*> _sendRegisteredPacket;
 	vector<Packet*> _sendCompletePacket;
 	mutex _sendLock;
 

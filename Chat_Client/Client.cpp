@@ -4,7 +4,7 @@ DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session);
 DWORD WINAPI IocpThreadMain();
 
 HANDLE iocpHandle;
-bool isTest = true;
+bool isTest = false;
 
 int main() {
 

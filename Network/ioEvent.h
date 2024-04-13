@@ -41,6 +41,5 @@ public:
 	SendEvent() : IoEvent(EventType::Send) {}
 
 public:
-	int thread_id;
 	vector<WSABUF> buffers;
 };

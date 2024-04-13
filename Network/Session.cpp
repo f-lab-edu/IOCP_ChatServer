@@ -97,30 +97,26 @@ void Session::RegisterSend()
 
 	_sendEvent.Init();
 	_sendEvent.owner = shared_from_this();
-	_sendEvent.thread_id = LThreadId;
 
-	_sendLock.lock();
-
-	while (_sendRegisteredPacket.size() > 0)
+	while (!_sendRegisteredPacket.empty())
 	{
 		int processSize;
-		Packet* p = _sendRegisteredPacket.front();
-
-		WSABUF buf;
-		buf.buf = _sendBuffer->ReadPos();
-		buf.len = p->GetSize();
+		Packet* p;
 		
-		_sendRegisteredPacket.pop();
-		_sendBuffer->CompleteRead(p->GetSize());
+		if (true == _sendRegisteredPacket.try_pop(p))
+		{
+			WSABUF buf;
+			buf.buf = _sendBuffer->ReadPos();
+			buf.len = p->GetSize();
 
-		_sendEvent.buffers.push_back(buf);
-		_sendCompletePacket.push_back(p);
+			_sendEvent.buffers.push_back(buf);
+			_sendCompletePacket.push_back(p);
+		
+			_sendBuffer->CompleteRead(p->GetSize());
+		}
 	}
-
 	GBufferManager->ReturnBuffer(_sendBuffer);
 	_sendBuffer = nullptr;
-
-	_sendLock.unlock();
 
 	DWORD numOfBytes = 0;
 	if (SOCKET_ERROR == ::WSASend(_socket, _sendEvent.buffers.data(), _sendEvent.buffers.size(), &numOfBytes, 0, &_sendEvent, nullptr))
@@ -134,7 +130,6 @@ void Session::RegisterSend()
 			return;
 		}
 	}
-
 }
 
 void Session::RegisterRecv()
@@ -170,15 +165,12 @@ void Session::CompletedConnect()
 void Session::CompletedSend(int thread_id, int sizeOfBytes)
 {
 	OnSend(sizeOfBytes);
-	
-
 
 	for (int i = 0; i < _sendCompletePacket.size(); i++)
 		delete _sendCompletePacket[i];
 
 	_sendCompletePacket.clear();
 	_isSendRegister.store(false);
-	cout << "Set Register " << false << endl;
 }
 
 void Session::CompletedRecv(int sizeOfBytes)
@@ -206,18 +198,12 @@ void Session::Connect(std::string ip, int port)
 
 void Session::Send(Packet* p)
 {
-
 	bool Flush = false;
 	
-	_sendLock.lock();
 	_sendRegisteredPacket.push(p);
-	_sendLock.unlock();
 
 	if (_isSendRegister.exchange(true) == false)
-	{
-		cout << "Set Register " << true << endl;
 		Flush = true;
-	}
 
 	if (Flush == true)
 		RegisterSend();
@@ -238,9 +224,7 @@ void Session::SendByCopy(Buffer* packetBuffer)
 
 	bool Flush = false;
 
-	_sendLock.lock();
 	_sendRegisteredPacket.push(p);
-	_sendLock.unlock();
 
 	if (_isSendRegister.exchange(true) == false)
 		Flush = true;
