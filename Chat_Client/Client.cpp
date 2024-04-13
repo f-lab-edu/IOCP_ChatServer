@@ -18,6 +18,8 @@ int main() {
 
 	cin >> session->nickName;
 
+	session->Connect("127.0.0.1", 7777);
+
 	if (iocpHandle == INVALID_HANDLE_VALUE) {
 		std::cout << "iocpHanlde Invalid";
 		return 0;
@@ -46,7 +48,6 @@ int main() {
 
 DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session)
 {
-	session->Connect("127.0.0.1", 7777);
 
 	while (1)
 	{
@@ -75,7 +76,6 @@ DWORD WINAPI IocpThreadMain() {
 		}
 		else {
 			int errCode = ::WSAGetLastError();
-			
 			std::cout << std::system_category().message(errCode);
 		}
 

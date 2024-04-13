@@ -196,13 +196,13 @@ int Session::OnRecv()
 	int recvSize = _recvBuffer.DataSize();
 	while (true)
 	{
-		if (recvSize < packetHeaderSize)
+		if (recvSize - processLen < packetHeaderSize)
 			break;
 
 		PacketHeader header;
 		memcpy(&header, buffer + processLen, packetHeaderSize);
 
-		if (recvSize < header.size)
+		if (recvSize - processLen < header.size)
 			break;
 
 		Packet* p = new Packet(buffer + processLen);
