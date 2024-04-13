@@ -91,8 +91,8 @@ void Listener::CompleteAccept(AcceptEvent* acceptEvent)
 		std::cout << "Getpeername ERROR: " << errCode;
 		return; 
 	}
-	inet_ntop(AF_INET,&sockAddr, (PSTR)& session->ip, INET_ADDRSTRLEN);
-	session->port = htons(sockAddr.sin_port);
+	inet_ntop(AF_INET,&sockAddr, (PSTR)& session->_ip, INET_ADDRSTRLEN);
+	session->_port = htons(sockAddr.sin_port);
 
 	session->RegisterRecv();
 	RegisterAccept(acceptEvent);

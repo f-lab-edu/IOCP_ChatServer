@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RingBuffer.h">
+    <ClInclude Include="Buffer.h">
       <Filter>Util</Filter>
     </ClInclude>
     <ClInclude Include="NetworkUtil.h">
@@ -45,13 +45,18 @@
     <ClInclude Include="ThreadManager.h">
       <Filter>Thread</Filter>
     </ClInclude>
-    <ClInclude Include="Packet.h" />
     <ClInclude Include="Protocol.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferManager.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet.h">
       <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="RingBuffer.cpp">
+    <ClCompile Include="Buffer.cpp">
       <Filter>Util</Filter>
     </ClCompile>
     <ClCompile Include="NetworkUtil.cpp">
@@ -75,6 +80,11 @@
     <ClCompile Include="ThreadManager.cpp">
       <Filter>Thread</Filter>
     </ClCompile>
-    <ClCompile Include="Packet.cpp" />
+    <ClCompile Include="BufferManager.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

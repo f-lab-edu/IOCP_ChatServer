@@ -1,6 +1,6 @@
 #pragma once
-
-extern ThreadManager* GThreadManager;
+extern class ThreadManager* GThreadManager;
+extern class BufferManager* GBufferManager;
 
 class CoreGlobal
 {

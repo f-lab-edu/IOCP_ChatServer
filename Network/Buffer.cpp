@@ -1,26 +1,21 @@
 #include "stdafx.h"
-#include "RingBuffer.h"
+#include "Buffer.h"
 
-RingBuffer::RingBuffer(int bufferSize)
+Buffer::Buffer(int bufferSize)
 	:_writePos(0), _readPos(0)
 {
-	//if (bufferSize > 65535)
-	//{
-	//	// 크래시 내기
-	//	return;
-	//}
 
 	_buffer = new char[bufferSize] { 0, };
 
 	_bufferSize = bufferSize;
 }
 
-RingBuffer::~RingBuffer()
+Buffer::~Buffer()
 {
 	delete _buffer;
 }
 
-void RingBuffer::CompleteRead(int readByte)
+void Buffer::CompleteRead(int readByte)
 {
 	if (_readPos + readByte > _bufferSize)
 	{
@@ -35,7 +30,7 @@ void RingBuffer::CompleteRead(int readByte)
 		
 }
 
-void RingBuffer::CompleteWrite(int writeByte)
+void Buffer::CompleteWrite(int writeByte)
 {
 	if (_writePos + writeByte > _bufferSize)
 	{
@@ -46,7 +41,7 @@ void RingBuffer::CompleteWrite(int writeByte)
 	_writePos += writeByte;
 }
 
-char* RingBuffer::Reserve(int size)
+char* Buffer::Reserve(int size)
 {
 	char* reservePos = WritePos();
 	_writePos += size;

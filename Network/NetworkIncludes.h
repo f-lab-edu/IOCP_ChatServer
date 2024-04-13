@@ -6,6 +6,7 @@
 #include <map>
 #include <unordered_map>
 #include <queue>
+#include <concurrent_queue.h>
 #include <functional>
 
 #include <memory>
@@ -16,9 +17,10 @@
 #pragma comment(lib, "ws2_32.lib")
 
 
-#include "RingBuffer.h"
+#include "Buffer.h"
 #include "NetworkUtil.h"
 #include "ThreadManager.h"
+#include "BufferManager.h"
 #include "CoreGlobal.h"
 #include "Packet.h"
 
@@ -30,3 +32,4 @@
 #include "Protocol.h"
 
 using namespace std;
+using namespace Concurrency;

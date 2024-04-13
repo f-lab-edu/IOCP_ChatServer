@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <set>
 
 DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session);
 DWORD WINAPI IocpThreadMain();
@@ -35,12 +34,6 @@ int main() {
 			WriteThreadMain(session);
 		});
 
-	/*std::set<std::shared_ptr<Session>> sessions;
-	for (int i = 0; i < 1; i++) {
-		std::shared_ptr<Session> session = std::make_shared<Session>(iocpHandle);
-		
-		sessions.insert(session);
-	}*/
 
 	GThreadManager->JoinAll();
 
@@ -54,13 +47,21 @@ DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session)
 		string chat;
 		cin >> chat;
 
-		Packet* p = new Packet();
+		if (chat.compare("q") == 0)
+		{
+			session->DoDisconnect();
+			break;
+		}
+
+		Packet* p = new Packet(ePacketType::WRITE_PACKET,session->GetSendBuffer());
 		p->startPacket(Protocol::C2S_CHAT_REQ);
 		p->push(chat);
 		p->endPacket(Protocol::C2S_CHAT_REQ);
 
 		session->Send(p);
 	}
+
+	return 0;
 }
 
 DWORD WINAPI IocpThreadMain() {

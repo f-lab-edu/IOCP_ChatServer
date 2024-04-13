@@ -1,27 +1,35 @@
 #include "stdafx.h"
 #include "Packet.h"
 
-Packet::Packet(char* buffer)
+Packet::Packet(unsigned char type, char* buffer)
 {
-	packetType = ePacketType::READ_PACKET;
+	if (type != ePacketType::READ_PACKET)
+		/*크래시 */ return;
 
-	memcpy(_data, buffer, sizeof(_data));
-	//_data = buffer;
+	packetType = type;
 
-	memcpy(&_header, _data, sizeof(PacketHeader));
+
+	_readBuffer = buffer;
+
+	memcpy(&_header, _readBuffer, sizeof(PacketHeader));
 	_idx += sizeof(PacketHeader);
 
 }
 
+Packet::Packet(unsigned char type, Buffer* buffer)
+{
+	if (type != ePacketType::WRITE_PACKET)
+		/*크래시 */ return;
+
+	packetType = type;
+
+	_writeBuffer = buffer;
+}
+
 void Packet::startPacket(unsigned short packetId)
 {
-	packetType = ePacketType::WRITE_PACKET;
-
 	_idx += sizeof(PacketHeader);
-
 	_header.packetId = packetId;
-
-	//_data = GThreadManager->GetSendBuffer(LThreadId)->WritePos();
 }
 
 void Packet::endPacket(unsigned short packetId)
@@ -30,8 +38,6 @@ void Packet::endPacket(unsigned short packetId)
 		/* 크래시 */return;
 	
 	_header.size = _idx;
-	memcpy(_data, &_header, sizeof(PacketHeader));
-	unsigned short tmp = (short)*_data;
-	//GThreadManager->GetSendBuffer(LThreadId)->CompleteWrite(_idx);
-	//GThreadManager->GetSendBuffer(LThreadId)->CompleteRead(_idx);
+	memcpy(_writeBuffer->WritePos(), &_header, sizeof(PacketHeader));
+	_writeBuffer->CompleteWrite(_idx);
 }

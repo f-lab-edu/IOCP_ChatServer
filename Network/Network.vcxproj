@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BufferManager.h" />
     <ClInclude Include="CoreGlobal.h" />
     <ClInclude Include="IocpObject.h" />
     <ClInclude Include="ioEvent.h" />
@@ -147,18 +148,19 @@
     <ClInclude Include="NetworkUtil.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Protocol.h" />
-    <ClInclude Include="RingBuffer.h" />
+    <ClInclude Include="Buffer.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="ThreadManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BufferManager.cpp" />
     <ClCompile Include="CoreGlobal.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="NetworkIncludes.cpp" />
     <ClCompile Include="NetworkUtil.cpp" />
     <ClCompile Include="Packet.cpp" />
-    <ClCompile Include="RingBuffer.cpp" />
+    <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="ThreadManager.cpp" />

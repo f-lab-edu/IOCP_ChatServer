@@ -1,8 +1,9 @@
 ﻿#include "stdafx.h"
 
 
-Session::Session(HANDLE iocpHandle) : _iocpHandle(iocpHandle), _recvEvent(EventType::Recv), _connectEvent(EventType::Connect), _recvBuffer(65535)
-	, _isSendRegister(false)
+Session::Session(HANDLE iocpHandle) : _iocpHandle(iocpHandle), _recvEvent(EventType::Recv), 
+_connectEvent(EventType::Connect), _disconnectEvent(EventType::Disconnect)
+, _recvBuffer(65535),_sendBuffer(nullptr), _isSendRegister(false)
 {
 	_socket = ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 
@@ -11,6 +12,11 @@ Session::Session(HANDLE iocpHandle) : _iocpHandle(iocpHandle), _recvEvent(EventT
 		std::cout << WSAGetLastError() << std::endl;
 	}
 
+}
+
+Session::~Session()
+{
+	::closesocket(_socket);
 }
 
 void Session::OnExecute(IoEvent* ioEvent, int SizeOfBytes)
@@ -32,14 +38,57 @@ void Session::OnExecute(IoEvent* ioEvent, int SizeOfBytes)
 	}
 }
 
-bool Session::RegisterConnect()
+void Session::RegisterConnect()
 {
-	return false;
+	SOCKADDR_IN myAddr;
+	myAddr.sin_family = AF_INET;
+	myAddr.sin_addr.s_addr = ::htonl(INADDR_ANY);
+	myAddr.sin_port = ::htons(0);
+
+	if (SOCKET_ERROR == ::bind(_socket, (SOCKADDR*)&myAddr, sizeof(myAddr)))
+	{
+		int errCode = WSAGetLastError();
+
+		std::cout << "bind ERROR: " << errCode;
+	}
+
+	CreateIoCompletionPort((HANDLE)_socket, _iocpHandle, 0, 0);
+
+
+	DWORD numOfBytes = 0;
+	SOCKADDR_IN targetAddr;
+	::memset(&targetAddr, 0, sizeof(targetAddr));
+	targetAddr.sin_family = AF_INET;
+	inet_pton(AF_INET, (PCSTR)_ip, &targetAddr.sin_addr);
+	targetAddr.sin_port = ::htons(_port);
+
+
+	_connectEvent.Init();
+	_connectEvent.owner = shared_from_this();
+
+	if (false == NetworkUtil::ConnectEx(_socket, reinterpret_cast<SOCKADDR*>(&targetAddr), sizeof(SOCKADDR_IN), nullptr, 0, &numOfBytes, &_connectEvent))
+	{
+		int errorCode = ::WSAGetLastError();
+		if (errorCode != WSA_IO_PENDING)
+		{
+			std::cout << "wsaError: " << errorCode << std::endl;
+			return;
+		}
+	}
+
 }
 
-bool Session::RegisterDisconnect()
+void Session::RegisterDisconnect()
 {
-	return false;
+	if (false == NetworkUtil::DisconnectEx(_socket, &_disconnectEvent, TF_REUSE_SOCKET, 0))
+	{
+		int errorCode = ::WSAGetLastError();
+		if (errorCode != WSA_IO_PENDING)
+		{
+			std::cout << "wsaError: " << errorCode << std::endl;
+			return;
+		}
+	}
 }
 
 void Session::RegisterSend()
@@ -54,12 +103,16 @@ void Session::RegisterSend()
 
 	while (_sendRegisteredPacket.size() > 0)
 	{
+		int processSize;
 		Packet* p = _sendRegisteredPacket.front();
+		Buffer* readBuffer = p->GetBuffer();
+
 		WSABUF buf;
-		buf.buf = p->GetBuffer();
+		buf.buf = readBuffer->ReadPos();
 		buf.len = p->GetSize();
 		
 		_sendRegisteredPacket.pop();
+		readBuffer->CompleteRead(p->GetSize());
 
 		_sendEvent.buffers.push_back(buf);
 	}
@@ -115,7 +168,6 @@ void Session::CompletedSend(int thread_id, int sizeOfBytes)
 {
 	OnSend(sizeOfBytes);
 	_isSendRegister = false;
-	GThreadManager->RenewalBuffer(thread_id, sizeOfBytes);
 }
 
 void Session::CompletedRecv(int sizeOfBytes)
@@ -135,39 +187,10 @@ void Session::CompletedDisconnect()
 
 void Session::Connect(std::string ip, int port)
 {
-	SOCKADDR_IN myAddr;
-	myAddr.sin_family = AF_INET;
-	myAddr.sin_addr.s_addr = ::htonl(INADDR_ANY);
-	myAddr.sin_port = ::htons(0);
+	memcpy(_ip, ip.c_str(), sizeof(_ip));
+	_port = port;
 
-	if (SOCKET_ERROR == ::bind(_socket, (SOCKADDR*)&myAddr, sizeof(myAddr))) {
-		int errCode = WSAGetLastError();
-
-		std::cout << "bind ERROR: " << errCode;
-	}
-
-	CreateIoCompletionPort((HANDLE)_socket, _iocpHandle,0, 0);
-
-
-	DWORD numOfBytes = 0;
-	SOCKADDR_IN targetAddr;
-	::memset(&targetAddr, 0, sizeof(targetAddr));
-	targetAddr.sin_family = AF_INET;
-	inet_pton(AF_INET, (PCSTR)ip.c_str(), &targetAddr.sin_addr);
-	targetAddr.sin_port = ::htons(port);
-
-
-	_connectEvent.Init();
-	_connectEvent.owner = shared_from_this();
-
-	if (false == NetworkUtil::ConnectEx(_socket, reinterpret_cast<SOCKADDR*>(&targetAddr), sizeof(SOCKADDR_IN), nullptr, 0, &numOfBytes, &_connectEvent)) {
-		int errorCode = ::WSAGetLastError();
-		if (errorCode != WSA_IO_PENDING) {
-			std::cout << "wsaError: " << errorCode << std::endl;
-			return;
-		}
-	}
-
+	RegisterConnect();
 }
 
 void Session::Send(Packet* p)
@@ -184,6 +207,37 @@ void Session::Send(Packet* p)
 
 	if (Flush == true)
 		RegisterSend();
+}
+
+void Session::SendByCopy(Buffer* packetBuffer)
+{
+	
+	char* buffer = packetBuffer->ReadPos();
+
+	PacketHeader header;
+	memcpy(&header, buffer, sizeof(PacketHeader));
+
+	Packet* p = new Packet(ePacketType::WRITE_PACKET, GetSendBuffer());
+	p->startPacket(header.packetId);
+	p->push(buffer + sizeof(PacketHeader), header.size - sizeof(PacketHeader));
+	p->endPacket(header.packetId);
+
+	bool Flush = false;
+
+	_sendLock.lock();
+	_sendRegisteredPacket.push(p);
+	_sendLock.unlock();
+
+	if (exchange(_isSendRegister, true) == false)
+		Flush = true;
+
+	if (Flush == true)
+		RegisterSend();
+}
+
+void Session::DoDisconnect()
+{
+	RegisterDisconnect();
 }
 
 
@@ -205,12 +259,20 @@ int Session::OnRecv()
 		if (recvSize - processLen < header.size)
 			break;
 
-		Packet* p = new Packet(buffer + processLen);
-		OnAssemblePacket(p);
+		Packet p(ePacketType::READ_PACKET, buffer + processLen);
+		OnAssemblePacket(&p);
 
 		processLen += header.size;
 	}
 
 	return processLen;
 
+}
+
+Buffer* Session::GetSendBuffer()
+{
+	if (_sendBuffer == nullptr)
+		_sendBuffer = GBufferManager->AssignBuffer();
+
+	return _sendBuffer;
 }

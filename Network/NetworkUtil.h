@@ -8,6 +8,8 @@ public:
 
 	static LPFN_CONNECTEX ConnectEx;
 	static LPFN_ACCEPTEX AcceptEx;
+	static LPFN_DISCONNECTEX DisconnectEx;
+
 
 };
 

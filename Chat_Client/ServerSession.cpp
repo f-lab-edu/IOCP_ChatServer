@@ -8,9 +8,19 @@ ServerSession::ServerSession(HANDLE iocp)
 {
 }
 
+void ServerSession::DoDisconnect()
+{
+	Packet p(ePacketType::WRITE_PACKET, GetSendBuffer());
+
+	p.startPacket(Protocol::C2S_EXIT_ROOM);
+	p.endPacket(Protocol::C2S_EXIT_ROOM);
+
+	Send(&p);
+}
+
 void ServerSession::OnConnected()
 {
-	Packet* p = new Packet();
+	Packet* p = new Packet(ePacketType::WRITE_PACKET, GetSendBuffer());
 	p->startPacket(Protocol::C2S_ENTER_ROOM);
 	p->push(nickName);
 	p->endPacket(Protocol::C2S_ENTER_ROOM);
@@ -24,6 +34,7 @@ void ServerSession::OnSend(int sendSize)
 
 void ServerSession::OnDisconnect()
 {
+
 }
 
 void ServerSession::OnAssemblePacket(Packet* packet)

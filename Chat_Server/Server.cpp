@@ -41,7 +41,7 @@ DWORD WINAPI EchoThreadMain() {
 		{
 			std::shared_ptr<IocpObject> iocpObject = nullptr;
 			iocpObject = ioEvent->owner;
- 			iocpObject->OnExecute(ioEvent, bytesTransffered);
+	  			iocpObject->OnExecute(ioEvent, bytesTransffered);
 		}
 		else {
 		 	int errCode = ::WSAGetLastError();

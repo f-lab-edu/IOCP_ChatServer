@@ -4,7 +4,10 @@ class ServerSession : public Session
 {
 public:
 	ServerSession(HANDLE iocp);
-	
+
+public:
+	void DoDisconnect() override;
+
 private:
 	void OnConnected() override;
 	void OnSend(int sendSize) override;

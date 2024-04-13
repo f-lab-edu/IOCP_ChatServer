@@ -4,12 +4,13 @@ class Session : public IocpObject
 {
 public:
 	Session(HANDLE iocpHandle);
+	~Session();
 public:
 	virtual void OnExecute(IoEvent* event, int SizeOfBytes) override;
 
 public:
-	bool RegisterConnect();
-	bool RegisterDisconnect();
+	void RegisterConnect();
+	void RegisterDisconnect();
 	void RegisterSend();
 	void RegisterRecv();
 
@@ -17,9 +18,11 @@ public:
 	void CompletedSend(int thread_id,int sizeOfBytes);
 	void CompletedRecv(int sizeOfBytes);
 	void CompletedDisconnect();
-	
+
 	void Connect(std::string ip, int port);
 	void Send(Packet* p);
+	void SendByCopy(Buffer* packetBuffer);
+	virtual void DoDisconnect();
 private:
 	int OnRecv();
 
@@ -30,9 +33,12 @@ private:
 	virtual void OnAssemblePacket(Packet* packet) {};
 public:
 	SOCKET GetSocket() { return _socket; }
-	RingBuffer* GetRecvBuffer() { return &_recvBuffer; }
-	char ip[INET_ADDRSTRLEN];
-	int port = 0;
+	Buffer* GetRecvBuffer() { return &_recvBuffer; }
+
+	char _ip[INET_ADDRSTRLEN];
+	int _port = 0;
+public:
+	Buffer* GetSendBuffer();
 private:
 	
 	HANDLE _iocpHandle;
@@ -40,12 +46,14 @@ private:
 
 	IoEvent _connectEvent;
 	IoEvent _recvEvent;
+	IoEvent _disconnectEvent;
 
 	SendEvent _sendEvent;
 	bool _isSendRegister;
 	queue<Packet*> _sendRegisteredPacket;
 	mutex _sendLock;
 
-	RingBuffer _recvBuffer;
+	Buffer* _sendBuffer;
+	Buffer _recvBuffer;
 };
 

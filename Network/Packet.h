@@ -12,33 +12,38 @@ struct PacketHeader
 };
 #	pragma pack(pop)
 
+enum ePacketType : unsigned char
+{
+	NONE,
+	READ_PACKET,
+	WRITE_PACKET
+};
 
 class Packet
 {
 public:
-	Packet() = default;
-	Packet(char* buffer);
+	Packet(unsigned char type, char* buffer);
+	Packet(unsigned char type, Buffer* buffer);
 	~Packet() = default;
 public:
 	void startPacket(unsigned short packetId);
 	void endPacket(unsigned short packetId);
 
-	char* GetBuffer() { return _data; }
+	Buffer* GetBuffer() { return _writeBuffer; }
 	unsigned short GetSize() { return _header.size; }
 	unsigned short GetPacketId() { return _header.packetId; }
 private:
 	PacketHeader _header;
-	char _data[65535];
-
-	// 전송할 데이터 끝
 private:
-	enum ePacketType
-	{
-		NONE,
-		READ_PACKET,
-		WRITE_PACKET
-	};
+	/* Write용*/
+	Buffer* _writeBuffer;
+	// 전송할 데이터 끝
 
+private:
+	/* Read용*/
+	char* _readBuffer;
+
+private:
 	unsigned char packetType = ePacketType::NONE;
 	unsigned short _idx = 0;
 
@@ -49,7 +54,7 @@ public:
 		if (packetType != ePacketType::WRITE_PACKET)
 			/* 크래시 */return;
 
-		memcpy(_data + _idx, &value, sizeof(T));
+		memcpy(_writeBuffer->WritePos() + _idx, &value, sizeof(T));
 		_idx += sizeof(T);
 	}
 
@@ -64,7 +69,16 @@ public:
 		unsigned char size = value.size();
 		push(size);
 
-		memcpy(_data + _idx, value.c_str(), value.size());
+		memcpy(_writeBuffer->WritePos() + _idx, value.c_str(), value.size());
+		_idx += size;
+	}
+
+	inline void push(char* value, int size)
+	{
+		if (packetType != ePacketType::WRITE_PACKET)
+			/* 크래시 */return;
+
+		memcpy(_writeBuffer->WritePos() + _idx, value, size);
 		_idx += size;
 	}
 
@@ -76,7 +90,7 @@ public:
 		if (packetType != ePacketType::READ_PACKET)
 			/* 크래시 */return;
 
-		memcpy(&value, _data + _idx, sizeof(T));
+		memcpy(&value, _readBuffer + _idx, sizeof(T));
 		_idx += sizeof(T);
 	}
 
@@ -88,7 +102,7 @@ public:
 		unsigned char len;
 		pop(len);
 		
-		value.append(static_cast<char*>(_data + _idx), len);
+		value.append(static_cast<char*>(_readBuffer + _idx), len);
 		_idx += len;
 	}
 };

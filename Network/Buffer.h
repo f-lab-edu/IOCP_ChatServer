@@ -1,9 +1,9 @@
 #pragma once
-class RingBuffer
+class Buffer
 {
 public:
-	RingBuffer(int bufferSize);
-	~RingBuffer();
+	Buffer(int bufferSize);
+	~Buffer();
 
 public:
 	char* ReadPos() { 
@@ -22,8 +22,6 @@ public:
 	int DataSize() { 
 		return _writePos - _readPos; 
 	}
-
-	void Clear();
 
 	void CompleteRead(int readByte);
 	void CompleteWrite(int writeByte);

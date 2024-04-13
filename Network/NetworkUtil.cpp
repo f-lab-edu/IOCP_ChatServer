@@ -4,6 +4,7 @@
 
 LPFN_CONNECTEX NetworkUtil::ConnectEx = nullptr;
 LPFN_ACCEPTEX NetworkUtil::AcceptEx = nullptr;
+LPFN_DISCONNECTEX NetworkUtil::DisconnectEx = nullptr;
 
 void NetworkUtil::Init()
 {
@@ -18,4 +19,8 @@ void NetworkUtil::Init()
 
 	guid = WSAID_ACCEPTEX;
 	WSAIoctl(dummySocket, SIO_GET_EXTENSION_FUNCTION_POINTER, &guid, sizeof(guid), (LPDWORD*)&NetworkUtil::AcceptEx, sizeof(NetworkUtil::AcceptEx), &bytes, NULL, NULL);
+
+	guid = WSAID_DISCONNECTEX;
+	WSAIoctl(dummySocket, SIO_GET_EXTENSION_FUNCTION_POINTER, &guid, sizeof(guid), (LPDWORD*)&NetworkUtil::DisconnectEx, sizeof(NetworkUtil::DisconnectEx), &bytes, NULL, NULL);
+
 }
