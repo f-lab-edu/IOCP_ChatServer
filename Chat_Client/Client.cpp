@@ -4,6 +4,8 @@ DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session);
 DWORD WINAPI IocpThreadMain();
 
 HANDLE iocpHandle;
+bool isTest = true;
+
 int main() {
 
 
@@ -45,7 +47,11 @@ DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session)
 	while (1)
 	{
 		string chat;
-		cin >> chat;
+
+		if (isTest)
+			chat = "hello";
+		else
+			cin >> chat;
 
 		if (chat.compare("q") == 0)
 		{

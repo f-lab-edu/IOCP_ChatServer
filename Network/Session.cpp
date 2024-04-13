@@ -115,6 +115,7 @@ void Session::RegisterSend()
 		readBuffer->CompleteRead(p->GetSize());
 
 		_sendEvent.buffers.push_back(buf);
+		_sendCompletePacket.push_back(p);
 	}
 
 	_sendLock.unlock();
@@ -167,6 +168,10 @@ void Session::CompletedConnect()
 void Session::CompletedSend(int thread_id, int sizeOfBytes)
 {
 	OnSend(sizeOfBytes);
+	
+	for (int i = 0; i < _sendCompletePacket.size(); i++)
+		delete _sendCompletePacket[i];
+	_sendCompletePacket.clear();
 	_isSendRegister = false;
 }
 

@@ -9,6 +9,7 @@ void Room::Broadcast(Packet* packet)
 		r->SendByCopy(packet->GetBuffer());
 
 	packet->GetBuffer()->CompleteRead(packet->GetSize());
+	delete packet;
 }
 
 void Room::Join(shared_ptr<ClientSession> session)
