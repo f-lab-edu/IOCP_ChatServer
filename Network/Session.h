@@ -15,7 +15,7 @@ public:
 	void RegisterRecv();
 
 	void CompletedConnect();
-	void CompletedSend(int thread_id,int sizeOfBytes);
+	void CompletedSend(int sizeOfBytes);
 	void CompletedRecv(int sizeOfBytes);
 	void CompletedDisconnect();
 

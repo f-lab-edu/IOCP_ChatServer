@@ -27,7 +27,7 @@ void Session::OnExecute(IoEvent* ioEvent, int SizeOfBytes)
 		CompletedConnect();
 		break;
 	case EventType::Send:
-		CompletedSend(((SendEvent*)ioEvent)->thread_id, SizeOfBytes);
+		CompletedSend(SizeOfBytes);
 		break;
 	case EventType::Recv:
 		CompletedRecv(SizeOfBytes);
@@ -162,7 +162,7 @@ void Session::CompletedConnect()
 	OnConnected();
 }
 
-void Session::CompletedSend(int thread_id, int sizeOfBytes)
+void Session::CompletedSend(int sizeOfBytes)
 {
 	OnSend(sizeOfBytes);
 
