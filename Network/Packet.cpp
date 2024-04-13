@@ -13,7 +13,6 @@ Packet::Packet(unsigned char type, char* buffer)
 
 	memcpy(&_header, _readBuffer, sizeof(PacketHeader));
 	_idx += sizeof(PacketHeader);
-
 }
 
 Packet::Packet(unsigned char type, Buffer* buffer)
@@ -22,18 +21,23 @@ Packet::Packet(unsigned char type, Buffer* buffer)
 		/*크래시 */ return;
 
 	packetType = type;
-
 	_writeBuffer = buffer;
 }
 
-void Packet::startPacket(unsigned short packetId)
+void Packet::startPacket(int packetId)
 {
+	if (packetId > packetMaxId)
+		/*크래시 */ return;
+
 	_idx += sizeof(PacketHeader);
 	_header.packetId = packetId;
 }
 
-void Packet::endPacket(unsigned short packetId)
+void Packet::endPacket(int packetId)
 {
+	if (packetId > packetMaxId)
+		/*크래시 */ return;
+
 	if (_header.packetId != packetId)
 		/* 크래시 */return;
 	

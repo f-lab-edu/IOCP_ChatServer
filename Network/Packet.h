@@ -10,7 +10,7 @@ struct PacketHeader
 	unsigned short size;
 	unsigned short packetId;
 };
-#	pragma pack(pop)
+#	pragma pack(pop)W
 
 enum ePacketType : unsigned char
 {
@@ -19,6 +19,9 @@ enum ePacketType : unsigned char
 	WRITE_PACKET
 };
 
+const int packetMaxSize = 65535;
+const int packetMaxId = 65535;
+
 class Packet
 {
 public:
@@ -26,8 +29,8 @@ public:
 	Packet(unsigned char type, Buffer* buffer);
 	~Packet() = default;
 public:
-	void startPacket(unsigned short packetId);
-	void endPacket(unsigned short packetId);
+	void startPacket(int packetId);
+	void endPacket(int packetId);
 
 	Buffer* GetBuffer() { return _writeBuffer; }
 	unsigned short GetSize() { return _header.size; }
@@ -54,6 +57,9 @@ public:
 		if (packetType != ePacketType::WRITE_PACKET)
 			/* 크래시 */return;
 
+		if (_idx + sizeof(T) > packetMaxSize)
+			/* 크래시 */return;
+
 		memcpy(_writeBuffer->WritePos() + _idx, &value, sizeof(T));
 		_idx += sizeof(T);
 	}
@@ -69,13 +75,20 @@ public:
 		unsigned char size = value.size();
 		push(size);
 
+		if (_idx + size > packetMaxSize)
+			/* 크래시 */ return;
+
 		memcpy(_writeBuffer->WritePos() + _idx, value.c_str(), value.size());
 		_idx += size;
+
 	}
 
 	inline void push(char* value, int size)
 	{
 		if (packetType != ePacketType::WRITE_PACKET)
+			/* 크래시 */return;
+		
+		if(_idx + size > packetMaxSize)
 			/* 크래시 */return;
 
 		memcpy(_writeBuffer->WritePos() + _idx, value, size);
@@ -90,6 +103,9 @@ public:
 		if (packetType != ePacketType::READ_PACKET)
 			/* 크래시 */return;
 
+		if(_idx + sizeof(T) > _header.size)
+			/* 크래시 */return;
+		
 		memcpy(&value, _readBuffer + _idx, sizeof(T));
 		_idx += sizeof(T);
 	}
@@ -102,6 +118,9 @@ public:
 		unsigned char len;
 		pop(len);
 		
+		if (_idx + len > _header.size)
+			/* 크래시 */return;
+
 		value.append(static_cast<char*>(_readBuffer + _idx), len);
 		_idx += len;
 	}
