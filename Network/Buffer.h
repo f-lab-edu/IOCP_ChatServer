@@ -26,6 +26,7 @@ public:
 	void CompleteRead(int readByte);
 	void CompleteWrite(int writeByte);
 
+	void Clear();
 	char* Reserve(int size);
 private:
 	int _readPos;
