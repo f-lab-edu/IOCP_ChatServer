@@ -7,7 +7,7 @@ using namespace std;
 void Room::Broadcast(shared_ptr<Packet> packet)
 {
 	for (auto& r : _sessions)
-		r->SendByCopy(packet->GetBuffer());
+		r->Send(packet);
 
 }
 
@@ -17,7 +17,7 @@ void Room::Join(shared_ptr<ClientSession> session)
 	
 	session->_userInfo.userId = ++_id;
 
-	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET,session->GetSendBuffer());
+	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
 	p->startPacket(Protocol::S2C_ENTER_ROOM_NOTIFY);
 	string contents;
 	contents = "[ÀÔÀå] " + session->_userInfo.nickName + "´ÔÀÌ ÀÔÀåÇß½À´Ï´Ù.";
@@ -31,7 +31,7 @@ void Room::Exit(shared_ptr<ClientSession> session)
 {
 	_sessions.erase(session);
 
-	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET, session->GetSendBuffer());
+	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
 
 	string contents;
 	contents = "[ÅðÀå] " + session->_userInfo.nickName + "´ÔÀÌ ÅðÀåÇß½À´Ï´Ù.";

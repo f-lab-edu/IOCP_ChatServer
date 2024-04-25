@@ -59,7 +59,7 @@ DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session)
 			break;
 		}
 
-		shared_ptr<Packet> p =make_shared<Packet>(ePacketType::WRITE_PACKET,session->GetSendBuffer());
+		shared_ptr<Packet> p =make_shared<Packet>(ePacketType::WRITE_PACKET);
 		p->startPacket(Protocol::C2S_CHAT_REQ);
 		p->push(chat);
 		p->endPacket(Protocol::C2S_CHAT_REQ);

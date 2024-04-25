@@ -21,7 +21,6 @@ public:
 
 	void Connect(std::string ip, int port);
 	void Send(shared_ptr<Packet> p);
-	void SendByCopy(Buffer* packetBuffer);
 	virtual void DoDisconnect();
 private:
 	int OnRecv();
@@ -37,8 +36,6 @@ public:
 
 	char _ip[INET_ADDRSTRLEN];
 	int _port = 0;
-public:
-	Buffer* GetSendBuffer();
 private:
 	
 	HANDLE _iocpHandle;
@@ -54,7 +51,6 @@ private:
 	vector<shared_ptr<Packet>> _sendCompletePacket;
 	mutex _sendLock;
 
-	Buffer* _sendBuffer;
 	Buffer _recvBuffer;
 };
 
