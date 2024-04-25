@@ -19,7 +19,7 @@ void PacketHandler::C2S_CHAT_REQ_Handler(shared_ptr<Session> session, Packet* pa
 	packet->pop(chat);
 	chat = cliSession->_userInfo.nickName + ": " + chat;
 
-	Packet* p = new Packet(ePacketType::WRITE_PACKET,cliSession->GetSendBuffer());
+	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET,cliSession->GetSendBuffer());
 	p->startPacket(Protocol::S2C_CHAT_RES);
 	p->push(chat);
 	p->endPacket(Protocol::S2C_CHAT_RES);

@@ -10,22 +10,22 @@ ServerSession::ServerSession(HANDLE iocp)
 
 void ServerSession::DoDisconnect()
 {
-	Packet p(ePacketType::WRITE_PACKET, GetSendBuffer());
+	shared_ptr<Packet> p = new shared_ptr<Packet>(ePacketType::WRITE_PACKET, GetSendBuffer());
 
-	p.startPacket(Protocol::C2S_EXIT_ROOM);
-	p.endPacket(Protocol::C2S_EXIT_ROOM);
+	p->startPacket(Protocol::C2S_EXIT_ROOM);
+	p->endPacket(Protocol::C2S_EXIT_ROOM);
 
-	Send(&p);
+	Send(move(p));
 }
 
 void ServerSession::OnConnected()
 {
-	Packet* p = new Packet(ePacketType::WRITE_PACKET, GetSendBuffer());
+	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET, GetSendBuffer());
 	p->startPacket(Protocol::C2S_ENTER_ROOM);
 	p->push(nickName);
 	p->endPacket(Protocol::C2S_ENTER_ROOM);
 
-	Send(p);
+	Send(move(p));
 }
 
 void ServerSession::OnSend(int sendSize)

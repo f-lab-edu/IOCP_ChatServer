@@ -101,7 +101,7 @@ void Session::RegisterSend()
 	while (!_sendRegisteredPacket.empty())
 	{
 		int processSize;
-		Packet* p;
+		shared_ptr<Packet> p;
 		
 		if (true == _sendRegisteredPacket.try_pop(p))
 		{
@@ -166,9 +166,6 @@ void Session::CompletedSend(int sizeOfBytes)
 {
 	OnSend(sizeOfBytes);
 
-	for (int i = 0; i < _sendCompletePacket.size(); i++)
-		delete _sendCompletePacket[i];
-
 	_sendCompletePacket.clear();
 	_isSendRegister.store(false);
 }
@@ -196,7 +193,7 @@ void Session::Connect(std::string ip, int port)
 	RegisterConnect();
 }
 
-void Session::Send(Packet* p)
+void Session::Send(shared_ptr<Packet> p)
 {
 	bool Flush = false;
 	
@@ -217,14 +214,14 @@ void Session::SendByCopy(Buffer* packetBuffer)
 	PacketHeader header;
 	memcpy(&header, buffer, sizeof(PacketHeader));
 
-	Packet* p = new Packet(ePacketType::WRITE_PACKET, GetSendBuffer());
+	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET, GetSendBuffer());
 	p->startPacket(header.packetId);
 	p->push(buffer + sizeof(PacketHeader), header.size - sizeof(PacketHeader));
 	p->endPacket(header.packetId);
 
 	bool Flush = false;
 
-	_sendRegisteredPacket.push(p);
+	_sendRegisteredPacket.push(std::move(p));
 
 	if (_isSendRegister.exchange(true) == false)
 		Flush = true;
