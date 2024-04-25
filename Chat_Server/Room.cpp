@@ -2,14 +2,13 @@
 #include "Room.h"
 
 Room* g_Room = nullptr;
+using namespace std;
 
-void Room::Broadcast(Packet* packet)
+void Room::Broadcast(shared_ptr<Packet> packet)
 {
 	for (auto& r : _sessions)
 		r->SendByCopy(packet->GetBuffer());
 
-	packet->GetBuffer()->CompleteRead(packet->GetSize());
-	delete packet;
 }
 
 void Room::Join(shared_ptr<ClientSession> session)

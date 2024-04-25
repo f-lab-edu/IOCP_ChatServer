@@ -10,7 +10,7 @@ ServerSession::ServerSession(HANDLE iocp)
 
 void ServerSession::DoDisconnect()
 {
-	shared_ptr<Packet> p = new shared_ptr<Packet>(ePacketType::WRITE_PACKET, GetSendBuffer());
+	shared_ptr<Packet> p =make_shared<Packet>(ePacketType::WRITE_PACKET, GetSendBuffer());
 
 	p->startPacket(Protocol::C2S_EXIT_ROOM);
 	p->endPacket(Protocol::C2S_EXIT_ROOM);
