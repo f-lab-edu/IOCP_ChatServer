@@ -10,7 +10,7 @@ struct PacketHeader
 	unsigned short size;
 	unsigned short packetId;
 };
-#	pragma pack(pop)W
+#	pragma pack(pop)
 
 enum ePacketType : unsigned char
 {
@@ -26,8 +26,8 @@ class Packet
 {
 public:
 	Packet(unsigned char type, char* buffer);
-	Packet(unsigned char type, Buffer* buffer);
-	~Packet() = default;
+	Packet(unsigned char type);
+	~Packet();
 public:
 	void startPacket(int packetId);
 	void endPacket(int packetId);

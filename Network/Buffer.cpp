@@ -25,8 +25,7 @@ void Buffer::CompleteRead(int readByte)
 
 	_readPos += readByte;
 
-	if (_writePos == _readPos)
-		_writePos = _readPos = 0;
+	Clear();
 		
 }
 
@@ -39,6 +38,12 @@ void Buffer::CompleteWrite(int writeByte)
 	}
 
 	_writePos += writeByte;
+}
+
+void Buffer::Clear()
+{
+	if (_writePos == _readPos)
+		_writePos = _readPos = 0;
 }
 
 char* Buffer::Reserve(int size)

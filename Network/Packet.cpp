@@ -15,13 +15,22 @@ Packet::Packet(unsigned char type, char* buffer)
 	_idx += sizeof(PacketHeader);
 }
 
-Packet::Packet(unsigned char type, Buffer* buffer)
+Packet::Packet(unsigned char type)
 {
 	if (type != ePacketType::WRITE_PACKET)
-		/*Å©·¡½Ã */ return;
+		return;
 
 	packetType = type;
-	_writeBuffer = buffer;
+	_writeBuffer = GBufferManager->AssignBuffer();
+}
+
+Packet::~Packet()
+{
+	if(packetType == ePacketType::WRITE_PACKET)
+	{ 
+		_writeBuffer->CompleteRead(_idx);
+		GBufferManager->ReturnBuffer(_writeBuffer);
+	}
 }
 
 void Packet::startPacket(int packetId)
@@ -31,6 +40,7 @@ void Packet::startPacket(int packetId)
 
 	_idx += sizeof(PacketHeader);
 	_header.packetId = packetId;
+
 }
 
 void Packet::endPacket(int packetId)
