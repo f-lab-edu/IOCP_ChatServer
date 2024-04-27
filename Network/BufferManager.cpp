@@ -31,5 +31,6 @@ Buffer* BufferManager::AssignBuffer()
 
 void BufferManager::ReturnBuffer(Buffer* buffer)
 {
+	buffer->Clear();
 	_buffers.push(buffer);
 }

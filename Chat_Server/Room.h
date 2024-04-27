@@ -6,7 +6,7 @@ extern Room* g_Room;
 class Room
 {
 public:
-	void Broadcast(Packet* packet);
+	void Broadcast(shared_ptr<Packet> p);
 
 	void Join(shared_ptr<ClientSession> session);
 

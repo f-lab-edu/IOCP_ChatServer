@@ -3,7 +3,7 @@
 
 Session::Session(HANDLE iocpHandle) : _iocpHandle(iocpHandle), _recvEvent(EventType::Recv), 
 _connectEvent(EventType::Connect), _disconnectEvent(EventType::Disconnect)
-, _recvBuffer(65535),_sendBuffer(nullptr), _isSendRegister(false)
+, _recvBuffer(65535), _isSendRegister(false)
 {
 	_socket = ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 
@@ -101,22 +101,18 @@ void Session::RegisterSend()
 	while (!_sendRegisteredPacket.empty())
 	{
 		int processSize;
-		Packet* p;
+		shared_ptr<Packet> p;
 		
 		if (true == _sendRegisteredPacket.try_pop(p))
 		{
 			WSABUF buf;
-			buf.buf = _sendBuffer->ReadPos();
+			buf.buf = p->GetBuffer()->ReadPos();
 			buf.len = p->GetSize();
 
 			_sendEvent.buffers.push_back(buf);
-			_sendCompletePacket.push_back(p);
-		
-			_sendBuffer->CompleteRead(p->GetSize());
+			_sendCompletePacket.push_back(move(p));
 		}
 	}
-	GBufferManager->ReturnBuffer(_sendBuffer);
-	_sendBuffer = nullptr;
 
 	DWORD numOfBytes = 0;
 	if (SOCKET_ERROR == ::WSASend(_socket, _sendEvent.buffers.data(), _sendEvent.buffers.size(), &numOfBytes, 0, &_sendEvent, nullptr))
@@ -166,9 +162,6 @@ void Session::CompletedSend(int sizeOfBytes)
 {
 	OnSend(sizeOfBytes);
 
-	for (int i = 0; i < _sendCompletePacket.size(); i++)
-		delete _sendCompletePacket[i];
-
 	_sendCompletePacket.clear();
 	_isSendRegister.store(false);
 }
@@ -196,35 +189,11 @@ void Session::Connect(std::string ip, int port)
 	RegisterConnect();
 }
 
-void Session::Send(Packet* p)
+void Session::Send(shared_ptr<Packet> p)
 {
 	bool Flush = false;
 	
-	_sendRegisteredPacket.push(p);
-
-	if (_isSendRegister.exchange(true) == false)
-		Flush = true;
-
-	if (Flush == true)
-		RegisterSend();
-}
-
-void Session::SendByCopy(Buffer* packetBuffer)
-{
-	
-	char* buffer = packetBuffer->ReadPos();
-
-	PacketHeader header;
-	memcpy(&header, buffer, sizeof(PacketHeader));
-
-	Packet* p = new Packet(ePacketType::WRITE_PACKET, GetSendBuffer());
-	p->startPacket(header.packetId);
-	p->push(buffer + sizeof(PacketHeader), header.size - sizeof(PacketHeader));
-	p->endPacket(header.packetId);
-
-	bool Flush = false;
-
-	_sendRegisteredPacket.push(p);
+	_sendRegisteredPacket.push(move(p));
 
 	if (_isSendRegister.exchange(true) == false)
 		Flush = true;
@@ -265,12 +234,4 @@ int Session::OnRecv()
 
 	return processLen;
 
-}
-
-Buffer* Session::GetSendBuffer()
-{
-	if (_sendBuffer == nullptr)
-		_sendBuffer = GBufferManager->AssignBuffer();
-
-	return _sendBuffer;
 }

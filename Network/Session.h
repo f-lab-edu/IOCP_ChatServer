@@ -20,8 +20,7 @@ public:
 	void CompletedDisconnect();
 
 	void Connect(std::string ip, int port);
-	void Send(Packet* p);
-	void SendByCopy(Buffer* packetBuffer);
+	void Send(shared_ptr<Packet> p);
 	virtual void DoDisconnect();
 private:
 	int OnRecv();
@@ -37,8 +36,6 @@ public:
 
 	char _ip[INET_ADDRSTRLEN];
 	int _port = 0;
-public:
-	Buffer* GetSendBuffer();
 private:
 	
 	HANDLE _iocpHandle;
@@ -50,11 +47,10 @@ private:
 
 	SendEvent _sendEvent;
 	atomic<bool> _isSendRegister;
-	concurrent_queue<Packet*> _sendRegisteredPacket;
-	vector<Packet*> _sendCompletePacket;
+	concurrent_queue<shared_ptr<Packet>> _sendRegisteredPacket;
+	vector<shared_ptr<Packet>> _sendCompletePacket;
 	mutex _sendLock;
 
-	Buffer* _sendBuffer;
 	Buffer _recvBuffer;
 };
 
