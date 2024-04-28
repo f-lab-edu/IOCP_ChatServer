@@ -17,7 +17,7 @@ private:
 	void OnSend(int sendSize) override;
 	void OnDisconnect() override;
 
-	void OnAssemblePacket(Packet* packet) override;
+	virtual void OnAssemblePacket(Packet* packet) override;
 
 public:
 	UserInfo _userInfo;

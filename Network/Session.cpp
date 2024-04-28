@@ -105,6 +105,9 @@ void Session::RegisterSend()
 		
 		if (true == _sendRegisteredPacket.try_pop(p))
 		{
+#ifdef _DEBUG
+			p->SetSendTick(clock());
+#endif
 			WSABUF buf;
 			buf.buf = p->GetBuffer()->ReadPos();
 			buf.len = p->GetSize();
@@ -195,7 +198,8 @@ void Session::Send(shared_ptr<Packet> p)
 	
 	_sendRegisteredPacket.push(move(p));
 
-	if (_isSendRegister.exchange(true) == false)
+	bool expected = false;
+	if (_isSendRegister.compare_exchange_strong(expected, true))
 		Flush = true;
 
 	if (Flush == true)

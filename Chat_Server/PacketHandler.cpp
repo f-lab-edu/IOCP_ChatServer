@@ -24,8 +24,6 @@ void PacketHandler::C2S_CHAT_REQ_Handler(shared_ptr<Session> session, Packet* pa
 	p->push(chat);
 	p->endPacket(Protocol::S2C_CHAT_RES);
 	g_Room->Broadcast(p);
-
-	cout << chat << " Boradcast" << endl;
 }
 
 void PacketHandler::C2S_EXIT_ROOM_Handler(shared_ptr<Session> session, Packet* packet)

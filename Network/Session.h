@@ -29,7 +29,7 @@ private:
 	virtual void OnSend(int sendSize) {};
 	virtual void OnDisconnect() {};
 	
-	virtual void OnAssemblePacket(Packet* packet) {};
+	virtual void OnAssemblePacket(Packet* packet) { }
 public:
 	SOCKET GetSocket() { return _socket; }
 	Buffer* GetRecvBuffer() { return &_recvBuffer; }

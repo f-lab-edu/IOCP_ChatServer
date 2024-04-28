@@ -40,7 +40,6 @@ void Packet::startPacket(int packetId)
 
 	_idx += sizeof(PacketHeader);
 	_header.packetId = packetId;
-
 }
 
 void Packet::endPacket(int packetId)
@@ -54,4 +53,10 @@ void Packet::endPacket(int packetId)
 	_header.size = _idx;
 	memcpy(_writeBuffer->WritePos(), &_header, sizeof(PacketHeader));
 	_writeBuffer->CompleteWrite(_idx);
+}
+
+void Packet::SetSendTick(clock_t tick)
+{
+	_header.sendTick = tick;
+	memcpy(_writeBuffer->WritePos() + sizeof(PacketHeader) - sizeof(_header.sendTick), &_header.sendTick, sizeof(clock_t));
 }

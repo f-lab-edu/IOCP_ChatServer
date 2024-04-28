@@ -4,7 +4,7 @@ DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session);
 DWORD WINAPI IocpThreadMain();
 
 HANDLE iocpHandle;
-bool isTest = false;
+bool isTest = true;
 
 int main() {
 
@@ -65,6 +65,9 @@ DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session)
 		p->endPacket(Protocol::C2S_CHAT_REQ);
 
 		session->Send(move(p));
+
+		//if (isTest)
+		//	Sleep(10);
 	}
 
 	return 0;
