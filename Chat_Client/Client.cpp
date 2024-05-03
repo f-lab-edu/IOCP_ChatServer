@@ -66,8 +66,8 @@ DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session)
 
 		session->Send(move(p));
 
-		//if (isTest)
-		//	Sleep(10);
+		if (isTest)
+			Sleep(10);
 	}
 
 	return 0;
@@ -87,6 +87,8 @@ DWORD WINAPI IocpThreadMain() {
 		else {
 			int errCode = ::WSAGetLastError();
 			std::cout << std::system_category().message(errCode);
+			ioEvent->owner->OnExecute(ioEvent, 0);
+
 		}
 
 	}

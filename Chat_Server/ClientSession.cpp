@@ -20,9 +20,6 @@ void ClientSession::OnDisconnect()
 
 void ClientSession::OnAssemblePacket(Packet* packet)
 {
-	unsigned short curTick = clock();
-	cout << "Process Tick: " << curTick - packet->GetSendTick() << endl;
-	
 	shared_ptr<Session> session = static_pointer_cast<Session>(shared_from_this());
 
 	switch (packet->GetPacketId())

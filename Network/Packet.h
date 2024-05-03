@@ -9,9 +9,6 @@ struct PacketHeader
 {
 	unsigned short size;
 	unsigned short packetId;
-#ifdef _DEBUG
-	clock_t sendTick;
-#endif
 };
 #	pragma pack(pop)
 
@@ -38,12 +35,7 @@ public:
 	Buffer* GetBuffer() { return _writeBuffer; }
 	unsigned short GetSize() { return _header.size; }
 	unsigned short GetPacketId() { return _header.packetId; }
-	unsigned short GetSendTick() { return _header.sendTick; }
 
-
-#ifdef _DEBUG
-	void SetSendTick(clock_t tick);
-#endif _DEBUG
 private:
 	PacketHeader _header;
 private:

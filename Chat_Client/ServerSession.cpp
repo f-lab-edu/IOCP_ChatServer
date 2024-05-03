@@ -41,7 +41,6 @@ void ServerSession::OnAssemblePacket(Packet* packet)
 {
 	clock_t curTick = clock();
 
-	cout << "Process Tick: " << curTick - packet->GetSendTick() << endl;
 	shared_ptr<Session> session = static_pointer_cast<ServerSession>(shared_from_this());
 
 	switch (packet->GetPacketId())
