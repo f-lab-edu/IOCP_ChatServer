@@ -169,19 +169,24 @@ void Session::CompletedConnect()
 
 void Session::CompletedSend(int sizeOfBytes)
 {
-	OnSend(sizeOfBytes);
+	if (sizeOfBytes != 0)
+	{
+		OnSend(sizeOfBytes);
+		_sendCompletePacket.clear();
+	}
 
-	_sendCompletePacket.clear();
 	_isSendRegister.store(false);
 }
 
 void Session::CompletedRecv(int sizeOfBytes)
 {
-	_recvBuffer.CompleteWrite(sizeOfBytes);
-	
-	int processLen = OnRecv();
-	_recvBuffer.CompleteRead(processLen);
-	
+	if (sizeOfBytes != 0)
+	{
+		_recvBuffer.CompleteWrite(sizeOfBytes);
+
+		int processLen = OnRecv();
+		_recvBuffer.CompleteRead(processLen);
+	}
 	RegisterRecv();
 }
 
