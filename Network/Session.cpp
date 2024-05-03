@@ -118,7 +118,11 @@ void Session::RegisterSend()
 	}
 
 	DWORD numOfBytes = 0;
-	if (SOCKET_ERROR == ::WSASend(_socket, _sendEvent.buffers.data(), _sendEvent.buffers.size(), &numOfBytes, 0, &_sendEvent, nullptr))
+	auto result = ::WSASend(_socket, _sendEvent.buffers.data(), _sendEvent.buffers.size(), &numOfBytes, 0, &_sendEvent, nullptr);
+	if (result == 0)
+		CompletedSend(numOfBytes);
+
+	else if (SOCKET_ERROR == result)
 	{
 
 		int errorCode = ::WSAGetLastError();
@@ -129,6 +133,7 @@ void Session::RegisterSend()
 			return;
 		}
 	}
+	
 }
 
 void Session::RegisterRecv()
@@ -143,7 +148,11 @@ void Session::RegisterRecv()
 	DWORD flags = 0;
 
 	_recvEvent.owner = shared_from_this();
-	if (SOCKET_ERROR == ::WSARecv(_socket, &wsaBuf, 1, &numOfBytes, &flags, (OVERLAPPED*)&_recvEvent, nullptr)) {
+
+	auto result = ::WSARecv(_socket, &wsaBuf, 1, &numOfBytes, &flags, (OVERLAPPED*)&_recvEvent, nullptr);
+	if (result == 0)
+		CompletedRecv(numOfBytes);
+	else if (SOCKET_ERROR == result) {
 		
 		int errorCode = ::WSAGetLastError();
 		if (errorCode != ERROR_IO_PENDING) {
