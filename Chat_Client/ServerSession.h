@@ -1,7 +1,5 @@
 #pragma once
 #include <string>
-#include <concurrent_vector.h>
-
 class ServerSession : public Session
 {
 public:
@@ -20,11 +18,12 @@ private:
 public:
 	void AddLatency(clock_t latency);
 	void LatencyCheck(int sleepMs);
+	
+	void MeasureLatency();
 public:
 	string nickName;
 	
-	concurrent_vector<clock_t> latencys;
-	clock_t latencyMeasurementStartTick;
-	clock_t latencyMeasurementInterval = 60000;
+	vector<clock_t> latencys;
+	int latencyAvgInterval = 1000;
 };
 

@@ -29,8 +29,7 @@ void ServerSession::OnConnected()
 
 	GThreadManager->ThreadStart([this]()
 		{
-			latencyMeasurementStartTick = clock() + latencyMeasurementInterval;
-			ServerSession::LatencyCheck(100);
+			ServerSession::LatencyCheck(10);
 		});
 }
 
@@ -67,21 +66,17 @@ void ServerSession::OnAssemblePacket(Packet* packet)
 void ServerSession::AddLatency(clock_t latency)
 {
 	latencys.push_back(move(latency));
+
+	if (latencys.size() >= latencyAvgInterval)
+	{
+		MeasureLatency();
+	}
 }
 
 void ServerSession::LatencyCheck(int sleepMs)
 {
 	while (true/*TODO: disconnect flag*/)
 	{
-
-		if (clock() >= latencyMeasurementStartTick)
-		{
-			auto avg = accumulate(latencys.begin(), latencys.end(), 0) / latencys.size();
-			cout << "Latency avg: " << avg << endl;
-			latencys.clear();
-			latencyMeasurementStartTick = clock() + latencyMeasurementInterval;
-		}
-
 		clock_t tick = clock();
 		shared_ptr<Packet> latency = make_shared<Packet>(ePacketType::WRITE_PACKET);
 		latency->startPacket(Protocol::LATENCY_CHECK);
@@ -92,4 +87,17 @@ void ServerSession::LatencyCheck(int sleepMs)
 		Sleep(sleepMs);
 
 	}
+}
+
+void ServerSession::MeasureLatency()
+{
+	auto avg = accumulate(latencys.begin(), latencys.end(), 0) / latencys.size();
+	cout << "Latency avg: " << avg << endl;
+
+	auto min = min_element(latencys.begin(), latencys.end());
+	cout << "Latency min: " << *min << endl;
+
+	auto max = max_element(latencys.begin(), latencys.end());
+	cout << "Latency max: " << *max << endl;
+	latencys.clear();
 }
