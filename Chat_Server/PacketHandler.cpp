@@ -1,6 +1,20 @@
 #include "stdafx.h"
 #include "PacketHandler.h"
 
+void PacketHandler::LATENCY_CHECK_Handler(shared_ptr<Session> session, Packet* packet)
+{
+	shared_ptr<ClientSession> cliSession = static_pointer_cast<ClientSession>(session);
+	clock_t tick;
+
+	packet->pop(tick);
+
+	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
+	p->startPacket(Protocol::LATENCY_CHECK);
+	p->push(tick);
+	p->endPacket(Protocol::LATENCY_CHECK);
+	cliSession->Send(p);
+}
+
 void PacketHandler::C2S_ENTER_ROOM_Handler(shared_ptr<Session> session, Packet* packet)
 {
 	shared_ptr<ClientSession> cliSession = static_pointer_cast<ClientSession>(session);
