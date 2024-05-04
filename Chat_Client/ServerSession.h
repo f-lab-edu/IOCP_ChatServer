@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <concurrent_vector.h>
+
 class ServerSession : public Session
 {
 public:
@@ -21,6 +23,8 @@ public:
 public:
 	string nickName;
 	
-	vector<clock_t> latencys;
+	concurrent_vector<clock_t> latencys;
+	clock_t latencyMeasurementStartTick;
+	clock_t latencyMeasurementInterval = 60000;
 };
 
