@@ -48,6 +48,9 @@ void ServerSession::OnAssemblePacket(Packet* packet)
 
 	switch (packet->GetPacketId())
 	{
+	case Protocol::LATENCY_CHECK:
+		PacketHandler::LATENCY_CHECK_Handler(session, packet);
+		break;
 	case Protocol::S2C_ENTER_ROOM_NOTIFY:
 		PacketHandler::S2C_ENTER_ROOM_NOTIFY_Handler(session, packet);
 		break;
