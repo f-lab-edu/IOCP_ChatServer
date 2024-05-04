@@ -52,5 +52,7 @@ private:
 	mutex _sendLock;
 
 	Buffer _recvBuffer;
+
+	atomic<bool> _isDisconnect;
 };
 

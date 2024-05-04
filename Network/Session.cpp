@@ -80,6 +80,8 @@ void Session::RegisterConnect()
 
 void Session::RegisterDisconnect()
 {
+	_disconnectEvent.Init();
+
 	if (false == NetworkUtil::DisconnectEx(_socket, &_disconnectEvent, TF_REUSE_SOCKET, 0))
 	{
 		int errorCode = ::WSAGetLastError();
@@ -205,6 +207,9 @@ void Session::Connect(std::string ip, int port)
 
 void Session::Send(shared_ptr<Packet> p)
 {
+	if (_isDisconnect == true) 
+		return;
+
 	bool Flush = false;
 	
 	_sendRegisteredPacket.push(move(p));
@@ -220,7 +225,11 @@ void Session::Send(shared_ptr<Packet> p)
 
 void Session::DoDisconnect()
 {
+	if (_isDisconnect == true)
+		return;
+	
 	RegisterDisconnect();
+	_isDisconnect = true;
 }
 
 
