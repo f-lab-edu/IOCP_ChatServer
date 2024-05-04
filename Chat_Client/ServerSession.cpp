@@ -76,7 +76,7 @@ void ServerSession::LatencyCheck(int sleepMs)
 
 		if (clock() >= latencyMeasurementStartTick)
 		{
-			auto avg = accumulate(latencys.begin(), latencys.end(), 0);
+			auto avg = accumulate(latencys.begin(), latencys.end(), 0) / latencys.size();
 			cout << "Latency avg: " << avg << endl;
 			latencys.clear();
 			latencyMeasurementStartTick = clock() + latencyMeasurementInterval;
