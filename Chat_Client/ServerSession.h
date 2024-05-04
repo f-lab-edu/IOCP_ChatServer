@@ -14,8 +14,13 @@ private:
 	void OnDisconnect() override;
 
 	void OnAssemblePacket(Packet* packet) override;
+	
+public:
+	void AddLatency(clock_t latency);
+	void LatencyCheck(int sleepMs);
 public:
 	string nickName;
 	
+	vector<clock_t> latencys;
 };
 

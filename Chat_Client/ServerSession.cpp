@@ -26,6 +26,11 @@ void ServerSession::OnConnected()
 	p->endPacket(Protocol::C2S_ENTER_ROOM);
 
 	Send(move(p));
+
+	GThreadManager->ThreadStart([this]()
+		{
+			ServerSession::LatencyCheck(100);
+		});
 }
 
 void ServerSession::OnSend(int sendSize)
@@ -52,5 +57,32 @@ void ServerSession::OnAssemblePacket(Packet* packet)
 	case Protocol::S2C_EXIT_ROOM_NOTIFY:
 		PacketHandler::S2C_EXIT_ROOM_NOTIFY_Handler(session, packet);
 		break;
+	}
+}
+
+void ServerSession::AddLatency(clock_t latency)
+{
+	latencys.push_back(move(latency));
+	if (latencys.size() >= 10)
+	{
+		auto avg = accumulate(latencys.begin(),latencys.end(),0);
+		cout << "Latency avg: " << avg << endl;
+		latencys.clear();
+	}
+}
+
+void ServerSession::LatencyCheck(int sleepMs)
+{
+	while (true/*TODO: disconnect flag*/)
+	{
+		clock_t tick = clock();
+		shared_ptr<Packet> latency = make_shared<Packet>(ePacketType::WRITE_PACKET);
+		latency->startPacket(Protocol::LATENCY_CHECK);
+		latency->push(tick);
+		latency->endPacket(Protocol::LATENCY_CHECK);
+		Send(latency);
+		
+		Sleep(sleepMs);
+
 	}
 }
