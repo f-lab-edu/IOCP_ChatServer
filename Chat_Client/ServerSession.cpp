@@ -26,6 +26,11 @@ void ServerSession::OnConnected()
 	p->endPacket(Protocol::C2S_ENTER_ROOM);
 
 	Send(move(p));
+
+	GThreadManager->ThreadStart([this]()
+		{
+			ChattingLogic();
+		});
 }
 
 void ServerSession::OnSend(int sendSize)
@@ -54,3 +59,34 @@ void ServerSession::OnAssemblePacket(Packet* packet)
 		break;
 	}
 }
+
+DWORD WINAPI ServerSession::ChattingLogic()
+{
+	while (1)
+	{
+		string chat;
+
+		if (isTestMode)
+			chat = "hello";
+		else
+			cin >> chat;
+
+		if (chat.compare("q") == 0)
+		{
+			DoDisconnect();
+			break;
+		}
+
+		shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
+		p->startPacket(Protocol::C2S_CHAT_REQ);
+		p->push(chat);
+		p->endPacket(Protocol::C2S_CHAT_REQ);
+
+		Send(move(p));
+
+		Sleep(100);
+	}
+
+	return 0;
+}
+
