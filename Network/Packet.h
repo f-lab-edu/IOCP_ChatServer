@@ -45,7 +45,13 @@ private:
 private:
 	/* Read용*/
 	char* _readBuffer;
-
+	
+public:
+	bool GetStartFlag() { return startFlag; }
+	bool GetEndFlag() { return endFlag; }
+private:
+	bool startFlag = false;
+	bool endFlag = false;
 private:
 	unsigned char packetType = ePacketType::NONE;
 	unsigned short _idx = 0;
@@ -54,6 +60,9 @@ public:
 	template<typename T>
 	inline void push(T& value)
 	{
+		if(startFlag == false || endFlag == true)
+			/* 크래시 */return;
+
 		if (packetType != ePacketType::WRITE_PACKET)
 			/* 크래시 */return;
 
@@ -67,6 +76,9 @@ public:
 
 	inline void push(string& value)
 	{
+		if (startFlag == false || endFlag == true)
+			/* 크래시 */return;
+
 		if (packetType != ePacketType::WRITE_PACKET)
 			/* 크래시 */return;
 
@@ -85,6 +97,9 @@ public:
 
 	inline void push(char* value, int size)
 	{
+		if (startFlag == false || endFlag == true)
+			/* 크래시 */return;
+
 		if (packetType != ePacketType::WRITE_PACKET)
 			/* 크래시 */return;
 		

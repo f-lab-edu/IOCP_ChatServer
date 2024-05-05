@@ -38,6 +38,7 @@ void Packet::startPacket(int packetId)
 	if (packetId > packetMaxId)
 		/*크래시 */ return;
 
+	startFlag = true;
 	_idx += sizeof(PacketHeader);
 	_header.packetId = packetId;
 
@@ -51,6 +52,8 @@ void Packet::endPacket(int packetId)
 	if (_header.packetId != packetId)
 		/* 크래시 */return;
 	
+	endFlag = true;
+
 	_header.size = _idx;
 	memcpy(_writeBuffer->WritePos(), &_header, sizeof(PacketHeader));
 	_writeBuffer->CompleteWrite(_idx);
