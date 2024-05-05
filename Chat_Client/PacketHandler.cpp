@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "PacketHandler.h"
 
 void PacketHandler::S2C_ENTER_ROOM_NOTIFY_Handler(shared_ptr<Session> session, Packet* packet)
