@@ -5,7 +5,7 @@ extern class BufferManager* GBufferManager;
 class CoreGlobal
 {
 public:
-	CoreGAlobal();
+	CoreGlobal();
 	~CoreGlobal();
 };
 
