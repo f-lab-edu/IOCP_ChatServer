@@ -20,6 +20,8 @@ void ServerSession::DoDisconnect()
 
 void ServerSession::OnConnected()
 {
+	cout << "서버 연결 완료" << endl;
+
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
 	p->startPacket(Protocol::C2S_ENTER_ROOM);
 	p->push(nickName);

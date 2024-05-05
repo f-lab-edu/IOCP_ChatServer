@@ -21,6 +21,7 @@ int main() {
 	cin >> session->nickName;
 
 	session->Connect("127.0.0.1", 7777);
+	cout << "서버와 연결 중입니다." << endl;
 
 	if (iocpHandle == INVALID_HANDLE_VALUE) {
 		std::cout << "iocpHanlde Invalid";
