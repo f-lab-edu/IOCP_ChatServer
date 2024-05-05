@@ -17,6 +17,7 @@ int main() {
 
 	std::shared_ptr<ServerSession> session = std::make_shared<ServerSession>(iocpHandle);
 
+	cout << "닉네임을 입력해주세요: ";
 	cin >> session->nickName;
 
 	session->Connect("127.0.0.1", 7777);
