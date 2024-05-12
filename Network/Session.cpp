@@ -11,6 +11,8 @@ _connectEvent(EventType::Connect), _disconnectEvent(EventType::Disconnect)
 	{
 		std::cout << WSAGetLastError() << std::endl;
 	}
+	_memoryLog = new vector<MemoryLog>();
+	_memoryLog->reserve(1000000);
 
 }
 
@@ -27,8 +29,15 @@ void Session::OnExecute(IoEvent* ioEvent, int SizeOfBytes)
 		CompletedConnect();
 		break;
 	case EventType::Send:
+	{
 		CompletedSend(SizeOfBytes);
+		MemoryLog log;
+		log.thread_id = this_thread::get_id();
+		log.type = MLogType::GQCS;
+		log.flag = _isSendRegister;
+		AddMLog(log);
 		break;
+	}
 	case EventType::Recv:
 		CompletedRecv(SizeOfBytes);
 		break;
@@ -119,8 +128,14 @@ void Session::RegisterSend()
 	DWORD numOfBytes = 0;
 	auto result = ::WSASend(_socket, _sendEvent.buffers.data(), _sendEvent.buffers.size(), &numOfBytes, 0, &_sendEvent, nullptr);
 	if (result == 0)
+	{
+		MemoryLog log;
+		log.thread_id = this_thread::get_id();
+		log.type = MLogType::WSASend;
+		log.flag = _isSendRegister;
+		AddMLog(log);
 		CompletedSend(numOfBytes);
-
+	}
 	else if (SOCKET_ERROR == result)
 	{
 
@@ -149,8 +164,8 @@ void Session::RegisterRecv()
 	_recvEvent.owner = shared_from_this();
 
 	auto result = ::WSARecv(_socket, &wsaBuf, 1, &numOfBytes, &flags, (OVERLAPPED*)&_recvEvent, nullptr);
-	if (result == 0)
-		CompletedRecv(numOfBytes);
+	if (result == 0){}
+		//CompletedRecv(numOfBytes);
 	else if (SOCKET_ERROR == result) {
 		
 		int errorCode = ::WSAGetLastError();
@@ -176,8 +191,13 @@ void Session::CompletedSend(int sizeOfBytes)
 		OnSend(sizeOfBytes);
 		_sendCompletePacket.clear();
 	}
-
 	_isSendRegister.store(false);
+
+	MemoryLog log;
+	log.thread_id = this_thread::get_id();
+	log.type = MLogType::FlagFalse;
+	log.flag = _isSendRegister;
+	AddMLog(log);
 }
 
 void Session::CompletedRecv(int sizeOfBytes)
@@ -217,6 +237,11 @@ void Session::Send(shared_ptr<Packet> p)
 	bool expected = false;
 	if (_isSendRegister.compare_exchange_strong(expected, true))
 	{
+		MemoryLog log;
+		log.thread_id = this_thread::get_id();
+		log.type = MLogType::FlagTrue;
+		log.flag = _isSendRegister;
+		AddMLog(log);
 		Flush = true;
 	}
 	if (Flush == true)
@@ -259,4 +284,11 @@ int Session::OnRecv()
 
 	return processLen;
 
+}
+
+void Session::AddMLog(MemoryLog& log)
+{
+	Mlock.lock();
+	_memoryLog->push_back(log);
+	Mlock.unlock();
 }

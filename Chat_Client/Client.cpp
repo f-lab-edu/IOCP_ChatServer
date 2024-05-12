@@ -67,7 +67,10 @@ DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session)
 		session->Send(move(p));
 
 		if (isTest)
-			Sleep(10);
+		{
+			
+		}
+			//Sleep(10);
 	}
 
 	return 0;
