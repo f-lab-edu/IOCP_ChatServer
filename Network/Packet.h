@@ -63,20 +63,20 @@ public:
 		if(startFlag == false || endFlag == true)
 		{
 			std::cout << "push when startFlag:" + to_string(startFlag) + " endFlag: " + to_string(endFlag) << std::endl;
-			assert(false);
+			xassert(false);
 			return;
 		}
 		if (packetType != ePacketType::WRITE_PACKET)
 		{
 			std::cout << "push packet is not writeType"; 
-			assert(false);
+			xassert(false);
 			return;
 		}
 
 		if (_idx + sizeof(T) > packetMaxSize)
 		{
 			std::cout << "push greater than maximum size"; 
-			assert(false);
+			xassert(false);
 			return;
 		}
 
@@ -90,14 +90,14 @@ public:
 		if (startFlag == false || endFlag == true)
 		{
             std::cout << "push when startFlag:" + to_string(startFlag) + " endFlag: " + to_string(endFlag) << std::endl;
-            assert(false);
+            xassert(false);
             return;
         }
 
 		if (packetType != ePacketType::WRITE_PACKET)
 		{
 			std::cout << "push packet is not writeType"; 
-			assert(false);
+			xassert(false);
 			return;
 		}
 		
@@ -105,7 +105,7 @@ public:
 		if (value.size() > UCHAR_MAX)
 		{
 			std::cout << "push string size is greater than ucharMax"; 
-            assert(false);
+            xassert(false);
 			return;
 		}
 		unsigned char size = static_cast<unsigned char>(value.size());
@@ -114,7 +114,7 @@ public:
 		if (_idx + size > packetMaxSize)
 		{
         	std::cout << "push greater than maximum size"; 
-        	assert(false);
+        	xassert(false);
         	return;
         }
 
@@ -128,14 +128,14 @@ public:
 		if (startFlag == false || endFlag == true)
 		{
 			std::cout << "push when startFlag:" + to_string(startFlag) + " endFlag: " + to_string(endFlag) << std::endl;
-			assert(false);
+			xassert(false);
 			return;
 		}
 
 		if (packetType != ePacketType::WRITE_PACKET)
 		{
         	std::cout << "push when packet is not writeType";
-        	assert(false);
+        	xassert(false);
         	return;
         }	
 		
@@ -143,7 +143,7 @@ public:
 		if(_idx + size > packetMaxSize)
 		{
 			std::cout << "packetSize is greater than maximum";
-			assert(false);
+			xassert(false);
 			return;
 		}
 
@@ -159,14 +159,14 @@ public:
 		if (packetType != ePacketType::READ_PACKET)
 		{
 			std::cout << "pop when packet is not readType";
-			assert(false);
+			xassert(false);
 			return;
 		}
 
 		if(_idx + sizeof(T) > _header.size)
 		{
 			std::cout << "pop greater than packet size";
-			assert(false);
+			xassert(false);
 			return;
         }
 		
@@ -180,7 +180,7 @@ public:
 		if (packetType != ePacketType::READ_PACKET)
 		{
 			std::cout << "pop when packet is not readType";
-			assert(false);
+			xassert(false);
 			return;
 		}
 
@@ -190,7 +190,7 @@ public:
 		if (_idx + len > _header.size)
 		{
 			std::cout << "pop greater than packetSize";
-			assert(false);
+			xassert(false);
 			return;
 		}
 

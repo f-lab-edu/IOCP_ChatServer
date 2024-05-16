@@ -6,7 +6,7 @@ Packet::Packet(unsigned char type, char* buffer)
 	if (type != ePacketType::READ_PACKET)
 	{
     	std::cout << "packet is not readType in read constructor";
-        assert(false);
+        xassert(false);
         return;
     }
 
@@ -24,7 +24,7 @@ Packet::Packet(unsigned char type)
 	if (type != ePacketType::WRITE_PACKET)
 	{
 		std::cout << "packet is not writeType in write constructor";
-		assert(false);
+		xassert(false);
 		return;
 	}
 
@@ -46,7 +46,7 @@ void Packet::startPacket(int packetId)
 	if (packetId > packetMaxId)
 	{
 		std::cout << "packetId is greater than maximum";
-		assert(false);
+		xassert(false);
 		return;
 	}
 	
@@ -61,14 +61,14 @@ void Packet::endPacket(int packetId)
 	if (packetId > packetMaxId)
 	{
     	std::cout << "packetId is greater than maximum";
-    	assert(false);
+    	xassert(false);
     	return;
     }
 
 	if (_header.packetId != packetId)
 	{
 		std::cout << "packetId is not equal when endPacket";
-        assert(false);
+        xassert(false);
         return;
     }
 	
