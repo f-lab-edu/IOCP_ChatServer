@@ -34,3 +34,5 @@
 
 using namespace std;
 using namespace Concurrency;
+
+#pragma warning(disable: 4819) // encording warning disable

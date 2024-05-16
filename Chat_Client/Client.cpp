@@ -55,7 +55,7 @@ DWORD WINAPI IocpThreadMain() {
 		IoEvent* ioEvent = nullptr;
 		ULONG_PTR key = 0;
 
-		if (true == ::GetQueuedCompletionStatus(iocpHandle, &bytesTransffered,&key, reinterpret_cast<LPOVERLAPPED*>(&ioEvent), INFINITE)) {
+		if (true == static_cast<bool>(::GetQueuedCompletionStatus(iocpHandle, &bytesTransffered,&key, reinterpret_cast<LPOVERLAPPED*>(&ioEvent), INFINITE))) {
 			auto iocpObject = ioEvent->owner;
  			iocpObject->OnExecute(ioEvent, bytesTransffered);
 		}

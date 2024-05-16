@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "Buffer.h"
 
 Buffer::Buffer(int bufferSize)
