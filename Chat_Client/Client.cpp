@@ -1,11 +1,11 @@
-﻿#include "stdafx.h"
+	string nickName;	string nickName;#include "stdafx.h"
 
 DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session);
 DWORD WINAPI IocpThreadMain();
 
 HANDLE iocpHandle;
-bool isTest = false;
 
+vector<std::shared_ptr<ServerSession>> dummyClients;
 int main() {
 
 
@@ -15,13 +15,22 @@ int main() {
 
 	iocpHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 
-	std::shared_ptr<ServerSession> session = std::make_shared<ServerSession>(iocpHandle);
-
+    string nickName;
 	cout << "닉네임을 입력해주세요: ";
-	cin >> session->nickName;
+	cin >> nickName;
 
-	session->Connect("127.0.0.1", 7777);
-	cout << "서버와 연결 중입니다." << endl;
+	for (int i = 0; i < 20; i++)
+	{
+		std::shared_ptr<ServerSession> session = std::make_shared<ServerSession>(iocpHandle);
+		session->nickName = nickName + "_" + to_string(i);
+		session->SetTestFlag(i != 0);
+        
+		session->Connect("127.0.0.1", 7777);
+	    cout << "서버와 연결 중입니다." << endl;
+		dummyClients.push_back(move(session));
+	}
+
+
 
 	if (iocpHandle == INVALID_HANDLE_VALUE) {
 		std::cout << "iocpHanlde Invalid";
@@ -33,43 +42,11 @@ int main() {
 	for (int i = 0; i < 1; i++)
 		GThreadManager->ThreadStart(IocpThreadMain);
 	
-	GThreadManager->ThreadStart([&session]()
-		{
-			WriteThreadMain(session);
-		});
+	
 
 
 	GThreadManager->JoinAll();
 
-}
-
-DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session)
-{
-
-	while (1)
-	{
-		string chat;
-
-		if (isTest)
-			chat = "hello";
-		else
-			cin >> chat;
-
-		if (chat.compare("q") == 0)
-		{
-			session->DoDisconnect();
-			break;
-		}
-
-		shared_ptr<Packet> p =make_shared<Packet>(ePacketType::WRITE_PACKET);
-		p->startPacket(Protocol::C2S_CHAT_REQ);
-		p->push(chat);
-		p->endPacket(Protocol::C2S_CHAT_REQ);
-
-		session->Send(move(p));
-	}
-
-	return 0;
 }
 
 DWORD WINAPI IocpThreadMain() {
