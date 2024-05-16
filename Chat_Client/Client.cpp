@@ -1,4 +1,4 @@
-	string nickName;	string nickName;#include "stdafx.h"
+#include "stdafx.h"
 
 DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session);
 DWORD WINAPI IocpThreadMain();
