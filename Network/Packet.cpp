@@ -1,10 +1,10 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Packet.h"
 
 Packet::Packet(unsigned char type, char* buffer)
 {
 	if (type != ePacketType::READ_PACKET)
-		/*Å©·¡½Ã */ return;
+		/*í¬ëž˜ì‹œ */ return;
 
 	packetType = type;
 
@@ -36,7 +36,7 @@ Packet::~Packet()
 void Packet::startPacket(int packetId)
 {
 	if (packetId > packetMaxId)
-		/*Å©·¡½Ã */ return;
+		/*í¬ëž˜ì‹œ */ return;
 
 	_idx += sizeof(PacketHeader);
 	_header.packetId = packetId;
@@ -46,10 +46,10 @@ void Packet::startPacket(int packetId)
 void Packet::endPacket(int packetId)
 {
 	if (packetId > packetMaxId)
-		/*Å©·¡½Ã */ return;
+		/*í¬ëž˜ì‹œ */ return;
 
 	if (_header.packetId != packetId)
-		/* Å©·¡½Ã */return;
+		/* í¬ëž˜ì‹œ */return;
 	
 	_header.size = _idx;
 	memcpy(_writeBuffer->WritePos(), &_header, sizeof(PacketHeader));

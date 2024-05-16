@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "ClientSession.h"
 
 ClientSession::ClientSession(HANDLE iocp) : Session::Session(iocp)

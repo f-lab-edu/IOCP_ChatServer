@@ -1,7 +1,7 @@
-#pragma once
+ï»¿#pragma once
 
 
-// Protocol ³×ÀÌ¹Ö
+// Protocol ë„¤ì´ë°
 // C2S -> S to C
 // S2C -> C to S
 

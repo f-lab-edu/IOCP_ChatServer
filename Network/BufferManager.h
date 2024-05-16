@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Buffer.h"
 #include <concurrent_queue.h>
 using namespace std;

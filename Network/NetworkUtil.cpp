@@ -1,4 +1,4 @@
-#include "stdafx.h"
+Ôªø#include "stdafx.h"
 #include "NetworkUtil.h"
 
 
@@ -10,7 +10,7 @@ void NetworkUtil::Init()
 {
 	WSADATA wsaData;
 	if (::WSAStartup(MAKEWORD(2, 2), OUT & wsaData) != 0)
-		/* ≈©∑°Ω√ */return;
+		/* ÌÅ¨ÎûòÏãú */return;
 
 	DWORD bytes = 0;
 	GUID guid = WSAID_CONNECTEX;
