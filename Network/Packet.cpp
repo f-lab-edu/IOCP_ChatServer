@@ -4,7 +4,11 @@
 Packet::Packet(unsigned char type, char* buffer)
 {
 	if (type != ePacketType::READ_PACKET)
-		/*크래시 */ return;
+	{
+    	std::cout << "packet is not readType in read constructor";
+        assert(false);
+        return;
+    }
 
 	packetType = type;
 
@@ -18,7 +22,11 @@ Packet::Packet(unsigned char type, char* buffer)
 Packet::Packet(unsigned char type)
 {
 	if (type != ePacketType::WRITE_PACKET)
+	{
+		std::cout << "packet is not writeType in write constructor";
+		assert(false);
 		return;
+	}
 
 	packetType = type;
 	_writeBuffer = GBufferManager->AssignBuffer();
