@@ -8,7 +8,6 @@ HANDLE iocpHandle;
 vector<std::shared_ptr<ServerSession>> dummyClients;
 int main() {
 
-
 	WSADATA wsaData;
 	if (0 != ::WSAStartup(MAKEWORD(2, 2), &wsaData))
 		return 0;

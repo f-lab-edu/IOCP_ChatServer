@@ -100,7 +100,6 @@ void Session::RegisterSend()
 
 	while (!_sendRegisteredPacket.empty())
 	{
-		int processSize;
 		shared_ptr<Packet> p;
 		
 		if (true == _sendRegisteredPacket.try_pop(p))
@@ -115,7 +114,7 @@ void Session::RegisterSend()
 	}
 
 	DWORD numOfBytes = 0;
-	if (SOCKET_ERROR == ::WSASend(_socket, _sendEvent.buffers.data(), _sendEvent.buffers.size(), &numOfBytes, 0, &_sendEvent, nullptr))
+	if (SOCKET_ERROR == ::WSASend(_socket, _sendEvent.buffers.data(), static_cast<DWORD>(_sendEvent.buffers.size()), &numOfBytes, 0, &_sendEvent, nullptr))
 	{
 
 		int errorCode = ::WSAGetLastError();
@@ -191,6 +190,9 @@ void Session::Connect(std::string ip, int port)
 
 void Session::Send(shared_ptr<Packet> p)
 {
+	if (p->GetStartFlag() == false || p->GetEndFlag() == false)
+		/* 크래시 */return;
+
 	bool Flush = false;
 	
 	_sendRegisteredPacket.push(move(p));
