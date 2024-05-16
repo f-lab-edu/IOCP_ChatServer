@@ -8,7 +8,6 @@ bool isTest = false;
 
 int main() {
 
-
 	WSADATA wsaData;
 	if (0 != ::WSAStartup(MAKEWORD(2, 2), &wsaData))
 		return 0;
