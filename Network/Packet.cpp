@@ -4,7 +4,7 @@
 Packet::Packet(unsigned char type, char* buffer)
 {
 	if (type != ePacketType::READ_PACKET)
-		/*Å©·¡½Ã */ return;
+		/*í¬ëž˜ì‹œ */ return;
 
 	packetType = type;
 
@@ -36,8 +36,12 @@ Packet::~Packet()
 void Packet::startPacket(int packetId)
 {
 	if (packetId > packetMaxId)
-		/*Å©·¡½Ã */ return;
-
+	{
+		std::cout << "packetId is greater than maximum";
+		assert(false);
+		return;
+	}
+	
 	startFlag = true;
 	_idx += sizeof(PacketHeader);
 	_header.packetId = packetId;
@@ -47,10 +51,18 @@ void Packet::startPacket(int packetId)
 void Packet::endPacket(int packetId)
 {
 	if (packetId > packetMaxId)
-		/*Å©·¡½Ã */ return;
+	{
+    	std::cout << "packetId is greater than maximum";
+    	assert(false);
+    	return;
+    }
 
 	if (_header.packetId != packetId)
-		/* Å©·¡½Ã */return;
+	{
+		std::cout << "packetId is not equal when endPacket";
+        assert(false);
+        return;
+    }
 	
 	endFlag = true;
 
