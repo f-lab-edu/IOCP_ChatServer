@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 DWORD WINAPI WriteThreadMain(shared_ptr<ServerSession> session);
 DWORD WINAPI IocpThreadMain();
@@ -17,9 +17,11 @@ int main() {
 
 	std::shared_ptr<ServerSession> session = std::make_shared<ServerSession>(iocpHandle);
 
+	cout << "닉네임을 입력해주세요: ";
 	cin >> session->nickName;
 
 	session->Connect("127.0.0.1", 7777);
+	cout << "서버와 연결 중입니다." << endl;
 
 	if (iocpHandle == INVALID_HANDLE_VALUE) {
 		std::cout << "iocpHanlde Invalid";

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include<string>
 
 using namespace std;
@@ -38,12 +38,12 @@ public:
 private:
 	PacketHeader _header;
 private:
-	/* Write¿ë*/
+	/* Writeìš©*/
 	Buffer* _writeBuffer;
-	// Àü¼ÛÇÒ µ¥ÀÌÅÍ ³¡
+	// ì „ì†¡í•  ë°ì´í„° ë
 
 private:
-	/* Read¿ë*/
+	/* Readìš©*/
 	char* _readBuffer;
 
 private:
@@ -55,10 +55,10 @@ public:
 	inline void push(T& value)
 	{
 		if (packetType != ePacketType::WRITE_PACKET)
-			/* Å©·¡½Ã */return;
+			/* í¬ë˜ì‹œ */return;
 
 		if (_idx + sizeof(T) > packetMaxSize)
-			/* Å©·¡½Ã */return;
+			/* í¬ë˜ì‹œ */return;
 
 		memcpy(_writeBuffer->WritePos() + _idx, &value, sizeof(T));
 		_idx += sizeof(T);
@@ -68,7 +68,7 @@ public:
 	inline void push(string& value)
 	{
 		if (packetType != ePacketType::WRITE_PACKET)
-			/* Å©·¡½Ã */return;
+			/* í¬ë˜ì‹œ */return;
 
 		if (value.size() > 255) return;
 
@@ -76,7 +76,7 @@ public:
 		push(size);
 
 		if (_idx + size > packetMaxSize)
-			/* Å©·¡½Ã */ return;
+			/* í¬ë˜ì‹œ */ return;
 
 		memcpy(_writeBuffer->WritePos() + _idx, value.c_str(), value.size());
 		_idx += size;
@@ -86,10 +86,10 @@ public:
 	inline void push(char* value, int size)
 	{
 		if (packetType != ePacketType::WRITE_PACKET)
-			/* Å©·¡½Ã */return;
+			/* í¬ë˜ì‹œ */return;
 		
 		if(_idx + size > packetMaxSize)
-			/* Å©·¡½Ã */return;
+			/* í¬ë˜ì‹œ */return;
 
 		memcpy(_writeBuffer->WritePos() + _idx, value, size);
 		_idx += size;
@@ -101,10 +101,10 @@ public:
 	inline void pop(T& value)
 	{
 		if (packetType != ePacketType::READ_PACKET)
-			/* Å©·¡½Ã */return;
+			/* í¬ë˜ì‹œ */return;
 
 		if(_idx + sizeof(T) > _header.size)
-			/* Å©·¡½Ã */return;
+			/* í¬ë˜ì‹œ */return;
 		
 		memcpy(&value, _readBuffer + _idx, sizeof(T));
 		_idx += sizeof(T);
@@ -113,13 +113,13 @@ public:
 	inline void pop(string& value)
 	{
 		if (packetType != ePacketType::READ_PACKET)
-			/* Å©·¡½Ã */return;
+			/* í¬ë˜ì‹œ */return;
 
 		unsigned char len;
 		pop(len);
 		
 		if (_idx + len > _header.size)
-			/* Å©·¡½Ã */return;
+			/* í¬ë˜ì‹œ */return;
 
 		value.append(static_cast<char*>(_readBuffer + _idx), len);
 		_idx += len;
