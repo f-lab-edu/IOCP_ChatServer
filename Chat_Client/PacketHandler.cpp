@@ -8,7 +8,7 @@ void PacketHandler::LATENCY_CHECK_Handler(shared_ptr<Session> session, Packet* p
 	clock_t tick = 0;
 	packet->pop(tick);
 	clock_t curTick = clock();
-	serverSession->AddLatency(curTick - tick);
+	serverSession->AddLatency(packet->GetPacketId(), curTick - tick);
 }
 
 void PacketHandler::S2C_ENTER_ROOM_NOTIFY_Handler(shared_ptr<Session> session, Packet* packet)

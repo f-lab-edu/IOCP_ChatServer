@@ -101,20 +101,19 @@ DWORD WINAPI ServerSession::ChattingLogic()
 
 		Send(move(p));
 
-		Sleep(100);
+		Sleep(1);
 	}
 
 	return 0;
 }
 
-void ServerSession::AddLatency(clock_t latency)
+void ServerSession::AddLatency(unsigned short packetId, clock_t latency)
 {
-	latencys.push_back(move(latency));
+	latencys.emplace(packetId,latency);
 
-	if (latencys.size() >= latencyAvgInterval)
-	{
-		MeasureLatency();
-	}
+	if (latencys.count(packetId) >= latencyAvgInterval)
+		MeasureLatency(packetId);
+	
 }
 
 void ServerSession::LatencyCheck(int sleepMs)
@@ -129,19 +128,24 @@ void ServerSession::LatencyCheck(int sleepMs)
 		Send(latency);
 		
 		Sleep(sleepMs);
-
 	}
 }
 
-void ServerSession::MeasureLatency()
+void ServerSession::MeasureLatency(unsigned short packetId)
 {
-	auto avg = accumulate(latencys.begin(), latencys.end(), 0) / latencys.size();
+	auto idRange = latencys.equal_range(packetId);
+	
+	auto avg = accumulate(idRange.first,idRange.second, 0,
+		[](int x, const multimap<unsigned short,clock_t>::value_type& y)
+		{
+			return x + y.second;
+		}) / latencys.size();
 	cout << "Latency avg: " << avg << endl;
 
-	auto min = min_element(latencys.begin(), latencys.end());
-	cout << "Latency min: " << *min << endl;
+	auto min = min_element(idRange.first,idRange.second);
+	cout << "Latency min: " << min->second << endl;
 
-	auto max = max_element(latencys.begin(), latencys.end());
-	cout << "Latency max: " << *max << endl;
+	auto max = max_element(idRange.first,idRange.second);
+	cout << "Latency max: " << max->second << endl;
 	latencys.clear();
 }

@@ -21,15 +21,15 @@ private:
 public:
 	DWORD WINAPI ChattingLogic();
 public:
-	void AddLatency(clock_t latency);
+	void AddLatency(unsigned short packetId, clock_t latency);
 	void LatencyCheck(int sleepMs);
 	
-	void MeasureLatency();
+	void MeasureLatency(unsigned short packetId);
 	
 
 	string nickName;
-	
-	vector<clock_t> latencys;
+
+	multimap<unsigned short, clock_t> latencys;
 	int latencyAvgInterval = 1000;
 };
 
