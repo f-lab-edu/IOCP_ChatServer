@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "PacketHandler.h"
 
 void PacketHandler::LATENCY_CHECK_Handler(shared_ptr<Session> session, Packet* packet)
@@ -20,13 +20,13 @@ void PacketHandler::C2S_ENTER_ROOM_Handler(shared_ptr<Session> session, Packet* 
 	shared_ptr<ClientSession> cliSession = static_pointer_cast<ClientSession>(session);
 
 	packet->pop(cliSession->_userInfo.nickName);
-	// ´Ù¸¥»ç¶÷¿¡°Ô ÀÔÀå ¼Ò½Ä ¾Ë¸®±â
+	// ë‹¤ë¥¸ì‚¬ëŒì—ê²Œ ì…ì¥ ì†Œì‹ ì•Œë¦¬ê¸°
 	g_Room->Join(cliSession);
 }
 
 void PacketHandler::C2S_CHAT_REQ_Handler(shared_ptr<Session> session, Packet* packet)
 {
-	// ´Ù¸¥ »ç¶÷¿¡°Ô Ã¤ÆÃ Á¤º¸ º¸³»±â
+	// ë‹¤ë¥¸ ì‚¬ëŒì—ê²Œ ì±„íŒ… ì •ë³´ ë³´ë‚´ê¸°
 	shared_ptr<ClientSession> cliSession = static_pointer_cast	<ClientSession>(session);
 	
 	string chat;

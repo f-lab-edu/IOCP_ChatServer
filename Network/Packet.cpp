@@ -4,7 +4,11 @@
 Packet::Packet(unsigned char type, char* buffer)
 {
 	if (type != ePacketType::READ_PACKET)
-		/*크래시 */ return;
+	{
+    	std::cout << "packet is not readType in read constructor";
+        xassert(false);
+        return;
+    }
 
 	packetType = type;
 
@@ -18,7 +22,11 @@ Packet::Packet(unsigned char type, char* buffer)
 Packet::Packet(unsigned char type)
 {
 	if (type != ePacketType::WRITE_PACKET)
+	{
+		std::cout << "packet is not writeType in write constructor";
+		xassert(false);
 		return;
+	}
 
 	packetType = type;
 	_writeBuffer = GBufferManager->AssignBuffer();
@@ -36,8 +44,12 @@ Packet::~Packet()
 void Packet::startPacket(int packetId)
 {
 	if (packetId > packetMaxId)
-		/*크래시 */ return;
-
+	{
+		std::cout << "packetId is greater than maximum";
+		xassert(false);
+		return;
+	}
+    
 	_idx += sizeof(PacketHeader);
 	_header.packetId = packetId;
 
@@ -46,11 +58,20 @@ void Packet::startPacket(int packetId)
 void Packet::endPacket(int packetId)
 {
 	if (packetId > packetMaxId)
-		/*크래시 */ return;
+	{
+    	std::cout << "packetId is greater than maximum";
+    	return;
+    }
 
 	if (_header.packetId != packetId)
-		/* 크래시 */return;
+	{
+		std::cout << "packetId is not equal when endPacket";
+        xassert(false);
+        return;
+    }
 	
+	endFlag = true;
+
 	_header.size = _idx;
 	memcpy(_writeBuffer->WritePos(), &_header, sizeof(PacketHeader));
 	_writeBuffer->CompleteWrite(_idx);

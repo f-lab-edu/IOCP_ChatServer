@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "ThreadManager.h"
 
 thread_local int LThreadId = 0;

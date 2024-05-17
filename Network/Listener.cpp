@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Listener.h"
 #include "Session.h"
 #include "IoEvent.h"
@@ -56,7 +56,7 @@ void Listener::RegisterAccept(AcceptEvent* ioEvent)
 	ULONG_PTR key = 0;
 	CreateIoCompletionPort((HANDLE)ioEvent->session->GetSocket(), _iocpHandle, (ULONG_PTR)&key, 0);
 
-	// ToDO ³ªÁß¿¡ º¸°ü
+	// ToDO ë‚˜ì¤‘ì— ë³´ê´€
 	DWORD bytesRecevied = 0;
 	if (false == NetworkUtil::AcceptEx(_listenSocket, ioEvent->session->GetSocket(), ioEvent->session->GetRecvBuffer()->WritePos(), 0,
 		sizeof(sockaddr_in) + 16, sizeof(sockaddr_in) + 16,

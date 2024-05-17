@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "ServerSession.h"
 
 
@@ -20,6 +20,8 @@ void ServerSession::DoDisconnect()
 
 void ServerSession::OnConnected()
 {
+	cout << "서버 연결 완료" << endl;
+
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
 	p->startPacket(Protocol::C2S_ENTER_ROOM);
 	p->push(nickName);
@@ -30,6 +32,11 @@ void ServerSession::OnConnected()
 	GThreadManager->ThreadStart([this]()
 		{
 			ServerSession::LatencyCheck(10);
+		});
+  
+  	GThreadManager->ThreadStart([this]()
+		{
+			ChattingLogic();
 		});
 }
 
@@ -101,3 +108,34 @@ void ServerSession::MeasureLatency()
 	cout << "Latency max: " << *max << endl;
 	latencys.clear();
 }
+=======
+DWORD WINAPI ServerSession::ChattingLogic()
+{
+	while (1)
+	{
+		string chat;
+
+		if (isTestMode)
+			chat = "hello";
+		else
+			cin >> chat;
+
+		if (chat.compare("q") == 0)
+		{
+			DoDisconnect();
+			break;
+		}
+
+		shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
+		p->startPacket(Protocol::C2S_CHAT_REQ);
+		p->push(chat);
+		p->endPacket(Protocol::C2S_CHAT_REQ);
+
+		Send(move(p));
+
+		Sleep(100);
+	}
+
+	return 0;
+}
+

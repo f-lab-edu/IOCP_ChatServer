@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "PacketHandler.h"
 
 void PacketHandler::LATENCY_CHECK_Handler(shared_ptr<Session> session, Packet* packet)

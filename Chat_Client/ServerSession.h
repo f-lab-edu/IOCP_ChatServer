@@ -1,10 +1,13 @@
-#pragma once
+﻿#pragma once
 #include <string>
 class ServerSession : public Session
 {
 public:
+	void SetTestFlag(bool flag) { isTestMode = flag; }
+private:
+	bool isTestMode;
+public:
 	ServerSession(HANDLE iocp);
-
 public:
 	void DoDisconnect() override;
 
@@ -25,5 +28,11 @@ public:
 	
 	vector<clock_t> latencys;
 	int latencyAvgInterval = 1000;
+
+public:
+	DWORD WINAPI ChattingLogic();
+public:
+	string nickName;
+
 };
 

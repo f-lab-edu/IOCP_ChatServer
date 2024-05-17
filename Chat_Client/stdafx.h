@@ -1,7 +1,7 @@
-#pragma once
+﻿#pragma once
 
-#pragma comment(lib, "..\\Lib\\Network\\Debug\\Network.lib")
 
+#pragma warning(disable: 4819) // encording warning disable
 #include "NetworkIncludes.h"
 #include "ServerSession.h"
 #include "PacketHandler.h"

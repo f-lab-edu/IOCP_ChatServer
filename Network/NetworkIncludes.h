@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <iostream>
 
@@ -17,7 +17,7 @@
 #include <mswsock.h>
 #pragma comment(lib, "ws2_32.lib")
 
-
+#include "Macro.h"
 #include "Buffer.h"
 #include "NetworkUtil.h"
 #include "ThreadManager.h"
@@ -34,3 +34,5 @@
 
 using namespace std;
 using namespace Concurrency;
+
+#pragma warning(disable: 4819) // encording warning disable

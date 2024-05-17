@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Room.h"
 
 Room* g_Room = nullptr;
@@ -20,7 +20,7 @@ void Room::Join(shared_ptr<ClientSession> session)
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
 	p->startPacket(Protocol::S2C_ENTER_ROOM_NOTIFY);
 	string contents;
-	contents = "[ÀÔÀå] " + session->_userInfo.nickName + "´ÔÀÌ ÀÔÀåÇß½À´Ï´Ù.";
+	contents = "[ìž…ìž¥] " + session->_userInfo.nickName + "ë‹˜ì´ ìž…ìž¥í–ˆìŠµë‹ˆë‹¤.";
 	p->push(contents);
 	p->endPacket(Protocol::S2C_ENTER_ROOM_NOTIFY);
 
@@ -34,7 +34,7 @@ void Room::Exit(shared_ptr<ClientSession> session)
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
 
 	string contents;
-	contents = "[ÅðÀå] " + session->_userInfo.nickName + "´ÔÀÌ ÅðÀåÇß½À´Ï´Ù.";
+	contents = "[í‡´ìž¥] " + session->_userInfo.nickName + "ë‹˜ì´ í‡´ìž¥í–ˆìŠµë‹ˆë‹¤.";
 	p->startPacket(Protocol::S2C_EXIT_ROOM_NOTIFY);
 	p->push(contents);
 	p->endPacket(Protocol::S2C_EXIT_ROOM_NOTIFY);
