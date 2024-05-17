@@ -8,6 +8,14 @@ ServerSession::ServerSession(HANDLE iocp)
 {
 }
 
+void ServerSession::Send(shared_ptr<Packet> p)
+{
+#ifdef _DEBUG
+	p->SetSendTick(clock());
+#endif
+	Session::Send(p);
+}
+
 void ServerSession::DoDisconnect()
 {
 	shared_ptr<Packet> p =make_shared<Packet>(ePacketType::WRITE_PACKET);
@@ -140,10 +148,3 @@ void ServerSession::MeasureLatency()
 	latencys.clear();
 }
 
-void ServerSession::Send(shared_ptr<Packet> p)
-{
-#ifdef _DEBUG
-	p->SetSendTick(clock());
-#endif
-	Session::Send(p);
-}

@@ -9,6 +9,7 @@ private:
 public:
 	ServerSession(HANDLE iocp);
 public:
+	void Send(shared_ptr<Packet> p) override;
 	void DoDisconnect() override;
 
 private:
@@ -18,7 +19,6 @@ private:
 
 	void OnAssemblePacket(Packet* packet) override;
 	
-	void Send(shared_ptr<Packet> p) override;
 public:
 	DWORD WINAPI ChattingLogic();
 public:
@@ -31,11 +31,5 @@ public:
 	
 	vector<clock_t> latencys;
 	int latencyAvgInterval = 1000;
-public:
-
-
-	string nickName;
-
-
 };
 
