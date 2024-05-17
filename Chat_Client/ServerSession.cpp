@@ -60,6 +60,8 @@ void ServerSession::OnAssemblePacket(Packet* packet)
 {
 	shared_ptr<Session> session = static_pointer_cast<ServerSession>(shared_from_this());
 
+	AddLatency(packet->GetPacketId(), clock() - packet->GetSendTick());
+	
 	switch (packet->GetPacketId())
 	{
 	case Protocol::LATENCY_CHECK:
