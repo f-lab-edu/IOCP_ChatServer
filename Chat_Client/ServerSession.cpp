@@ -140,12 +140,12 @@ void ServerSession::MeasureLatency(unsigned short packetId)
 		{
 			return x + y.second;
 		}) / latencys.size();
-	cout << "Latency avg: " << avg << endl;
+	cout << nickName << "-> packetId: " << packetId <<  " Latency avg: " << avg << endl;
 
-	auto min = min_element(idRange.first,idRange.second);
-	cout << "Latency min: " << min->second << endl;
+	auto min  = min_element(idRange.first,idRange.second);
+	cout << nickName << "-> packetId: " << packetId <<  " Latency min: " << min->second << endl;
 
 	auto max = max_element(idRange.first,idRange.second);
-	cout << "Latency max: " << max->second << endl;
+	cout << nickName << "-> packetId: " << packetId << " Latency max: " << max->second << endl;
 	latencys.clear();
 }
