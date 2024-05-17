@@ -122,10 +122,8 @@ void ServerSession::LatencyCheck(int sleepMs)
 {
 	while (true/*TODO: disconnect flag*/)
 	{
-		clock_t tick = clock();
 		shared_ptr<Packet> latency = make_shared<Packet>(ePacketType::WRITE_PACKET);
 		latency->startPacket(Protocol::LATENCY_CHECK);
-		latency->push(tick);
 		latency->endPacket(Protocol::LATENCY_CHECK);
 		Send(latency);
 		
