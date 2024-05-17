@@ -18,6 +18,7 @@ private:
 
 	void OnAssemblePacket(Packet* packet) override;
 	
+	void Send(shared_ptr<Packet> p) override;
 public:
 	DWORD WINAPI ChattingLogic();
 public:
@@ -31,8 +32,8 @@ public:
 	vector<clock_t> latencys;
 	int latencyAvgInterval = 1000;
 public:
-	DWORD WINAPI ChattingLogic();
-public:
+
+
 	string nickName;
 
 
