@@ -21,7 +21,7 @@ void PacketHandler::C2S_ENTER_ROOM_Handler(shared_ptr<Session> session, Packet* 
 
 	packet->pop(cliSession->_userInfo.nickName);
 	// 다른사람에게 입장 소식 알리기
-	g_Room->Join(cliSession);
+	g_Room->Join(cliSession, packet);
 }
 
 void PacketHandler::C2S_CHAT_REQ_Handler(shared_ptr<Session> session, Packet* packet)
@@ -38,13 +38,10 @@ void PacketHandler::C2S_CHAT_REQ_Handler(shared_ptr<Session> session, Packet* pa
 	p->push(chat);
 	p->endPacket(Protocol::S2C_CHAT_RES);
 	g_Room->Broadcast(p);
-
-	cout << chat << " Boradcast" << endl;
 }
 
 void PacketHandler::C2S_EXIT_ROOM_Handler(shared_ptr<Session> session, Packet* packet)
 {
 	shared_ptr<ClientSession> cliSession = static_pointer_cast<ClientSession>(session);
-	g_Room->Exit(cliSession);
-
+	g_Room->Exit(cliSession, packet);
 }
