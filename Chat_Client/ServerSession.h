@@ -17,7 +17,6 @@ private:
 	void OnDisconnect() override;
 
 	void OnAssemblePacket(Packet* packet) override;
-<<<<<<<<< Temporary merge branch 1
 	
 public:
 	DWORD WINAPI ChattingLogic();
