@@ -49,7 +49,15 @@ void Packet::startPacket(int packetId)
 		xassert(false);
 		return;
 	}
+
+	if(startFlag == true)
+	{
+		std::cout << "startPacket Twice";
+		xassert(false);
+		return;
+	}
     
+	startFlag = true;
 	_idx += sizeof(PacketHeader);
 	_header.packetId = packetId;
 
@@ -70,8 +78,14 @@ void Packet::endPacket(int packetId)
         return;
     }
 	
+	if(endFlag == true)
+	{
+		std::cout << "endPacket Twice";
+		xassert(false);
+		return;
+	}
+	
 	endFlag = true;
-
 	_header.size = _idx;
 	memcpy(_writeBuffer->WritePos(), &_header, sizeof(PacketHeader));
 	_writeBuffer->CompleteWrite(_idx);
