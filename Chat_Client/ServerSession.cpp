@@ -149,5 +149,6 @@ void ServerSession::MeasureLatency(unsigned short packetId)
 
 	auto max = max_element(idRange.first,idRange.second);
 	cout << nickName << "-> packetId: " << packetId << " Latency max: " << max->second << endl;
-	latencys.clear();
+
+	latencys.erase(idRange.first,idRange.second);
 }
