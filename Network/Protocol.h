@@ -7,6 +7,7 @@
 
 enum Protocol
 {
+	LATENCY_CHECK = 0,	
 	C2S_ENTER_ROOM = 1,
 	S2C_ENTER_ROOM_NOTIFY,
 	

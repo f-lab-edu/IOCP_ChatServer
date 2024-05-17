@@ -31,6 +31,11 @@ void ServerSession::OnConnected()
 
 	GThreadManager->ThreadStart([this]()
 		{
+			ServerSession::LatencyCheck(10);
+		});
+  
+  	GThreadManager->ThreadStart([this]()
+		{
 			ChattingLogic();
 		});
 }
@@ -50,6 +55,9 @@ void ServerSession::OnAssemblePacket(Packet* packet)
 
 	switch (packet->GetPacketId())
 	{
+	case Protocol::LATENCY_CHECK:
+		PacketHandler::LATENCY_CHECK_Handler(session, packet);
+		break;
 	case Protocol::S2C_ENTER_ROOM_NOTIFY:
 		PacketHandler::S2C_ENTER_ROOM_NOTIFY_Handler(session, packet);
 		break;
@@ -62,6 +70,45 @@ void ServerSession::OnAssemblePacket(Packet* packet)
 	}
 }
 
+void ServerSession::AddLatency(clock_t latency)
+{
+	latencys.push_back(move(latency));
+
+	if (latencys.size() >= latencyAvgInterval)
+	{
+		MeasureLatency();
+	}
+}
+
+void ServerSession::LatencyCheck(int sleepMs)
+{
+	while (true/*TODO: disconnect flag*/)
+	{
+		clock_t tick = clock();
+		shared_ptr<Packet> latency = make_shared<Packet>(ePacketType::WRITE_PACKET);
+		latency->startPacket(Protocol::LATENCY_CHECK);
+		latency->push(tick);
+		latency->endPacket(Protocol::LATENCY_CHECK);
+		Send(latency);
+		
+		Sleep(sleepMs);
+
+	}
+}
+
+void ServerSession::MeasureLatency()
+{
+	auto avg = accumulate(latencys.begin(), latencys.end(), 0) / latencys.size();
+	cout << "Latency avg: " << avg << endl;
+
+	auto min = min_element(latencys.begin(), latencys.end());
+	cout << "Latency min: " << *min << endl;
+
+	auto max = max_element(latencys.begin(), latencys.end());
+	cout << "Latency max: " << *max << endl;
+	latencys.clear();
+}
+=======
 DWORD WINAPI ServerSession::ChattingLogic()
 {
 	while (1)
