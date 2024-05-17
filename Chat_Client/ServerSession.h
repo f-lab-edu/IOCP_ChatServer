@@ -10,14 +10,13 @@ public:
 	ServerSession(HANDLE iocp);
 public:
 	void DoDisconnect() override;
-
+	void Send(shared_ptr<Packet> p) override;
 private:
 	void OnConnected() override;
 	void OnSend(int sendSize) override;
 	void OnDisconnect() override;
 
 	void OnAssemblePacket(Packet* packet) override;
-<<<<<<<<< Temporary merge branch 1
 	
 public:
 	DWORD WINAPI ChattingLogic();
@@ -26,16 +25,11 @@ public:
 	void LatencyCheck(int sleepMs);
 	
 	void MeasureLatency();
-public:
+	
+
 	string nickName;
 	
 	vector<clock_t> latencys;
 	int latencyAvgInterval = 1000;
-public:
-	DWORD WINAPI ChattingLogic();
-public:
-	string nickName;
-
-
 };
 

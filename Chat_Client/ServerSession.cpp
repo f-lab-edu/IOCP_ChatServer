@@ -18,6 +18,12 @@ void ServerSession::DoDisconnect()
 	Send(move(p));
 }
 
+void ServerSession::Send(shared_ptr<Packet> p)
+{
+	p->SetSendTick(clock());
+	Session::Send(p);
+}
+
 void ServerSession::OnConnected()
 {
 	cout << "서버 연결 완료" << endl;
@@ -39,6 +45,7 @@ void ServerSession::OnConnected()
 		{
 			ServerSession::LatencyCheck(10);
 		});
+}
 
 void ServerSession::OnSend(int sendSize)
 {
@@ -71,6 +78,34 @@ void ServerSession::OnAssemblePacket(Packet* packet)
 }
 
 DWORD WINAPI ServerSession::ChattingLogic()
+{
+	while (1)
+	{
+		string chat;
+
+		if (isTestMode)
+			chat = "hello";
+		else
+			cin >> chat;
+
+		if (chat.compare("q") == 0)
+		{
+			DoDisconnect();
+			break;
+		}
+
+		shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
+		p->startPacket(Protocol::C2S_CHAT_REQ);
+		p->push(chat);
+		p->endPacket(Protocol::C2S_CHAT_REQ);
+
+		Send(move(p));
+
+		Sleep(100);
+	}
+
+	return 0;
+}
 
 void ServerSession::AddLatency(clock_t latency)
 {
@@ -109,34 +144,4 @@ void ServerSession::MeasureLatency()
 	auto max = max_element(latencys.begin(), latencys.end());
 	cout << "Latency max: " << *max << endl;
 	latencys.clear();
-}
-
-DWORD WINAPI ServerSession::ChattingLogic()
-{
-	while (1)
-	{
-		string chat;
-
-		if (isTestMode)
-			chat = "hello";
-		else
-			cin >> chat;
-
-		if (chat.compare("q") == 0)
-		{
-			DoDisconnect();
-			break;
-		}
-
-		shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
-		p->startPacket(Protocol::C2S_CHAT_REQ);
-		p->push(chat);
-		p->endPacket(Protocol::C2S_CHAT_REQ);
-
-		Send(move(p));
-
-		Sleep(100);
-	}
-
-	return 0;
 }
