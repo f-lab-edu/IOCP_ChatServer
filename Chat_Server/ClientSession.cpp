@@ -24,6 +24,9 @@ void ClientSession::OnAssemblePacket(Packet* packet)
 
 	switch (packet->GetPacketId())
 	{
+	case Protocol::LATENCY_CHECK:
+		PacketHandler::LATENCY_CHECK_Handler(session, packet);
+		break;
 	case Protocol::C2S_ENTER_ROOM:
 		PacketHandler::C2S_ENTER_ROOM_Handler(session, packet);
 		break;

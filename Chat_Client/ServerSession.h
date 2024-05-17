@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <string>
 class ServerSession : public Session
 {
@@ -17,12 +17,17 @@ private:
 	void OnDisconnect() override;
 
 	void OnAssemblePacket(Packet* packet) override;
-
 public:
 	DWORD WINAPI ChattingLogic();
 public:
+	void AddLatency(clock_t latency);
+	void LatencyCheck(int sleepMs);
+	
+	void MeasureLatency();
+public:
 	string nickName;
-
-
+	
+	vector<clock_t> latencys;
+	int latencyAvgInterval = 1000;
 };
 
