@@ -148,8 +148,8 @@ void Session::RegisterRecv()
 	_recvEvent.owner = shared_from_this();
 
 	auto result = ::WSARecv(_socket, &wsaBuf, 1, &numOfBytes, &flags, (OVERLAPPED*)&_recvEvent, nullptr);
-	if (result == 0){}
-		//CompletedRecv(numOfBytes);
+	if (result == 0)
+		CompletedRecv(numOfBytes);
 	else if (SOCKET_ERROR == result) {
 		
 		int errorCode = ::WSAGetLastError();
