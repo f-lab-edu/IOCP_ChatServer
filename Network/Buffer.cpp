@@ -19,7 +19,7 @@ void Buffer::CompleteRead(int readByte)
 {
 	if (_readPos + readByte > _bufferSize)
 	{
-		// Å©·¡½Ã ³»±â
+		// í¬ë˜ì‹œ ë‚´ê¸°
 		return;
 	}
 
@@ -33,7 +33,7 @@ void Buffer::CompleteWrite(int writeByte)
 {
 	if (_writePos + writeByte > _bufferSize)
 	{
-		// Å©·¡½Ã ³»±â
+		// í¬ë˜ì‹œ ë‚´ê¸°
 		return;
 	}
 

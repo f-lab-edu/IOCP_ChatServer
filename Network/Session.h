@@ -1,4 +1,5 @@
 #pragma once
+
 class Session : public IocpObject
 {
 public:
@@ -19,7 +20,8 @@ public:
 	void CompletedDisconnect();
 
 	void Connect(std::string ip, int port);
-	void Send(shared_ptr<Packet> p);
+
+	virtual void Send(shared_ptr<Packet> p);
 	virtual void DoDisconnect();
 private:
 	int OnRecv();

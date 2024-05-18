@@ -104,7 +104,6 @@ void Session::RegisterSend()
 
 	while (!_sendRegisteredPacket.empty())
 	{
-		int processSize;
 		shared_ptr<Packet> p;
 		
 		if (true == _sendRegisteredPacket.try_pop(p))
@@ -119,6 +118,7 @@ void Session::RegisterSend()
 	}
 
 	DWORD numOfBytes = 0;
+  
 	auto result = ::WSASend(_socket, _sendEvent.buffers.data(), _sendEvent.buffers.size(), &numOfBytes, 0, &_sendEvent, nullptr);
 	if (result == 0)
 		CompletedSend(numOfBytes);
@@ -179,6 +179,7 @@ void Session::CompletedSend(int sizeOfBytes)
 	}
 
 	OnSend(sizeOfBytes);
+
 	_sendCompletePacket.clear();
 
 	if(_sendRegisteredPacket.empty() == false)
@@ -220,6 +221,9 @@ void Session::Send(shared_ptr<Packet> p)
 {
 	if (_isDisconnect == true) 
 		return;
+  
+	if (p->GetStartFlag() == false || p->GetEndFlag() == false)
+		/* 크래시 */return;
 
 	bool Flush = false;
 	
@@ -269,5 +273,5 @@ int Session::OnRecv()
 	}
 
 	return processLen;
-
 }
+

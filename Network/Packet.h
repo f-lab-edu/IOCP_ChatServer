@@ -9,6 +9,9 @@ struct PacketHeader
 {
 	unsigned short size;
 	unsigned short packetId;
+#ifdef _DEBUG
+	clock_t sendTick;
+#endif
 };
 #	pragma pack(pop)
 
@@ -36,15 +39,21 @@ public:
 	unsigned short GetSize() { return _header.size; }
 	unsigned short GetPacketId() { return _header.packetId; }
 
+#ifdef _DEBUG
+public:
+	clock_t GetSendTick(){return _header.sendTick; }
+	void SetSendTick(clock_t tick){ _header.sendTick = tick; }
+#endif
+
 private:
 	PacketHeader _header;
 private:
-	/* Write용*/
+	/* Write  */
 	Buffer* _writeBuffer;
-	// 전송할 데이터 끝
+	//                 
 
 private:
-	/* Read용*/
+	/* Read  */
 	char* _readBuffer;
 
 private:
@@ -56,10 +65,10 @@ public:
 	inline void push(T& value)
 	{
 		if (packetType != ePacketType::WRITE_PACKET)
-			/* 크래시 */return;
+			/* 크     */return;
 
 		if (_idx + sizeof(T) > packetMaxSize)
-			/* 크래시 */return;
+			/* 크     */return;
 
 		memcpy(_writeBuffer->WritePos() + _idx, &value, sizeof(T));
 		_idx += sizeof(T);
@@ -69,7 +78,7 @@ public:
 	inline void push(string& value)
 	{
 		if (packetType != ePacketType::WRITE_PACKET)
-			/* 크래시 */return;
+			/* 크     */return;
 
 		if (value.size() > 255) return;
 
@@ -77,7 +86,7 @@ public:
 		push(size);
 
 		if (_idx + size > packetMaxSize)
-			/* 크래시 */ return;
+			/* 크     */ return;
 
 		memcpy(_writeBuffer->WritePos() + _idx, value.c_str(), value.size());
 		_idx += size;
@@ -87,10 +96,10 @@ public:
 	inline void push(char* value, int size)
 	{
 		if (packetType != ePacketType::WRITE_PACKET)
-			/* 크래시 */return;
+			/* 크     */return;
 		
 		if(_idx + size > packetMaxSize)
-			/* 크래시 */return;
+			/* 크     */return;
 
 		memcpy(_writeBuffer->WritePos() + _idx, value, size);
 		_idx += size;
@@ -102,10 +111,10 @@ public:
 	inline void pop(T& value)
 	{
 		if (packetType != ePacketType::READ_PACKET)
-			/* 크래시 */return;
+			/* 크     */return;
 
 		if(_idx + sizeof(T) > _header.size)
-			/* 크래시 */return;
+			/* 크     */return;
 		
 		memcpy(&value, _readBuffer + _idx, sizeof(T));
 		_idx += sizeof(T);
@@ -114,13 +123,13 @@ public:
 	inline void pop(string& value)
 	{
 		if (packetType != ePacketType::READ_PACKET)
-			/* 크래시 */return;
+			/* 크     */return;
 
 		unsigned char len;
 		pop(len);
 		
 		if (_idx + len > _header.size)
-			/* 크래시 */return;
+			/* 크     */return;
 
 		value.append(static_cast<char*>(_readBuffer + _idx), len);
 		_idx += len;

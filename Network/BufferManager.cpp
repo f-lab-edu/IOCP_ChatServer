@@ -1,4 +1,4 @@
-#include "BufferManager.h"
+﻿#include "BufferManager.h"
 
 BufferManager::BufferManager(int bufferNum)
 {

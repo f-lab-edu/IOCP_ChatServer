@@ -54,6 +54,7 @@
     <ClInclude Include="Packet.h">
       <Filter>Network</Filter>
     </ClInclude>
+    <ClInclude Include="Macro.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Buffer.cpp">

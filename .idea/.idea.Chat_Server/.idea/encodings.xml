@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" native2AsciiForPropertiesFiles="true" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$APPLICATION_CONFIG_DIR$/rider64.exe.vmoptions" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Chat_Client/Client.cpp" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Chat_Server/ClientSession.cpp" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Network/Buffer.cpp" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Network/Packet.h" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>

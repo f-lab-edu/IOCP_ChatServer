@@ -1,12 +1,13 @@
-#pragma once
+ï»¿#pragma once
 
 
-// Protocol ³×ÀÌ¹Ö
+// Protocol ë„¤ì´ë°
 // C2S -> S to C
 // S2C -> C to S
 
 enum Protocol
 {
+	LATENCY_CHECK = 0,	
 	C2S_ENTER_ROOM = 1,
 	S2C_ENTER_ROOM_NOTIFY,
 	
