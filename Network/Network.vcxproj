@@ -150,6 +150,7 @@
     <ClInclude Include="IocpObject.h" />
     <ClInclude Include="ioEvent.h" />
     <ClInclude Include="Listener.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="NetworkIncludes.h" />
     <ClInclude Include="NetworkUtil.h" />
