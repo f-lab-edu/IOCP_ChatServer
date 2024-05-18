@@ -20,7 +20,10 @@ void ServerSession::DoDisconnect()
 
 void ServerSession::Send(shared_ptr<Packet> p)
 {
+#ifdef _DUBUG
 	p->SetSendTick(clock());
+#endif
+	
 	Session::Send(p);
 }
 
@@ -37,14 +40,15 @@ void ServerSession::OnConnected()
 
 	GThreadManager->ThreadStart([this]()
 		{
-
 			ChattingLogic();
 		});
 
+#ifdef _DEBUG
 	GThreadManager->ThreadStart([this]()
 		{
 			ServerSession::LatencyCheck(10);
 		});
+#endif
 }
 
 void ServerSession::OnSend(int sendSize)
@@ -60,7 +64,9 @@ void ServerSession::OnAssemblePacket(Packet* packet)
 {
 	shared_ptr<Session> session = static_pointer_cast<ServerSession>(shared_from_this());
 
+#ifdef _DEBUG
 	AddLatency(packet->GetPacketId(), clock() - packet->GetSendTick());
+#endif
 	
 	switch (packet->GetPacketId())
 	{

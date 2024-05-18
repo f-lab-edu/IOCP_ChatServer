@@ -5,7 +5,9 @@ void PacketHandler::LATENCY_CHECK_Handler(shared_ptr<Session> session, Packet* p
 {
 	shared_ptr<ServerSession> serverSession = static_pointer_cast<ServerSession>(session);
 
+#ifdef _DEBUG
 	serverSession->AddLatency(packet->GetPacketId(), clock() - packet->GetSendTick());
+#endif
 }
 
 void PacketHandler::S2C_ENTER_ROOM_NOTIFY_Handler(shared_ptr<Session> session, Packet* packet)

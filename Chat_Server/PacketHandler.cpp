@@ -6,7 +6,10 @@ void PacketHandler::LATENCY_CHECK_Handler(shared_ptr<Session> session, Packet* p
 	shared_ptr<ClientSession> cliSession = static_pointer_cast<ClientSession>(session);
 	
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
+#ifdef _DEBUG
 	p->SetSendTick(packet->GetSendTick());
+#endif
+	
 	p->startPacket(Protocol::LATENCY_CHECK);
 	p->endPacket(Protocol::LATENCY_CHECK);
 	cliSession->Send(p);
@@ -31,7 +34,9 @@ void PacketHandler::C2S_CHAT_REQ_Handler(shared_ptr<Session> session, Packet* pa
 	chat = cliSession->_userInfo.nickName + ": " + chat;
 
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
+#ifdef _DEBUG
 	p->SetSendTick(packet->GetSendTick());
+#endif
 	
 	p->startPacket(Protocol::S2C_CHAT_RES);
 	p->push(chat);
