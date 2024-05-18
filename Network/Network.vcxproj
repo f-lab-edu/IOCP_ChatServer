@@ -157,6 +157,7 @@
     <ClInclude Include="Protocol.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Session.h" />
+    <ClInclude Include="Singleton.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="ThreadManager.h" />
   </ItemGroup>
