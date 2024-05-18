@@ -8,14 +8,6 @@ ServerSession::ServerSession(HANDLE iocp)
 {
 }
 
-void ServerSession::Send(shared_ptr<Packet> p)
-{
-#ifdef _DEBUG
-	p->SetSendTick(clock());
-#endif
-	Session::Send(p);
-}
-
 void ServerSession::DoDisconnect()
 {
 	shared_ptr<Packet> p =make_shared<Packet>(ePacketType::WRITE_PACKET);
@@ -118,7 +110,6 @@ DWORD WINAPI ServerSession::ChattingLogic()
 		Send(move(p));
 
 		Sleep(1);
-
 	}
 
 	return 0;
@@ -130,15 +121,15 @@ void ServerSession::AddLatency(unsigned short packetId, clock_t latency)
 
 	if (latencys.count(packetId) >= latencyAvgInterval)
 		MeasureLatency(packetId);
-
+	
 }
 
 void ServerSession::LatencyCheck(int sleepMs)
 {
 	while (true/*TODO: disconnect flag*/)
-	{		shared_ptr<Packet> latency = make_shared<Packet>(ePacketType::WRITE_PACKET);
+	{
+		shared_ptr<Packet> latency = make_shared<Packet>(ePacketType::WRITE_PACKET);
 		latency->startPacket(Protocol::LATENCY_CHECK);
-	
 		latency->endPacket(Protocol::LATENCY_CHECK);
 		Send(latency);
 		
