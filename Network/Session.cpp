@@ -175,7 +175,10 @@ void Session::CompletedSend(int sizeOfBytes)
 		OnSend(sizeOfBytes);
 		_sendCompletePacket.clear();
 	}
-	_isSendRegister.store(false);
+	if(_sendRegisteredPacket.empty() == false)
+		RegisterSend();
+	else
+		_isSendRegister.store(false);
 }
 
 void Session::CompletedRecv(int sizeOfBytes)
