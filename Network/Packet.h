@@ -80,7 +80,7 @@ public:
 
 		if (value.size() > 255) return;
 
-		unsigned char size = value.size();
+		unsigned char size = static_cast<unsigned char>(value.size());
 		push(size);
 
 		if (_idx + size > packetMaxSize)

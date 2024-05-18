@@ -70,7 +70,7 @@ void Packet::endPacket(int packetId)
         return;
     }
 	
-	endFlag = true;
+	//endFlag = true;
 
 	_header.size = _idx;
 	memcpy(_writeBuffer->WritePos(), &_header, sizeof(PacketHeader));
