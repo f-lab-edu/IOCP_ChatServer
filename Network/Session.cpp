@@ -170,11 +170,15 @@ void Session::CompletedConnect()
 
 void Session::CompletedSend(int sizeOfBytes)
 {
-	if (sizeOfBytes != 0)
+	if (sizeOfBytes == 0)
 	{
-		OnSend(sizeOfBytes);
-		_sendCompletePacket.clear();
+		DoDisconnect();
+		return;
 	}
+
+	OnSend(sizeOfBytes);
+	_sendCompletePacket.clear();
+
 	if(_sendRegisteredPacket.empty() == false)
 		RegisterSend();
 	else
@@ -183,13 +187,17 @@ void Session::CompletedSend(int sizeOfBytes)
 
 void Session::CompletedRecv(int sizeOfBytes)
 {
-	if (sizeOfBytes != 0)
+	if (sizeOfBytes == 0)
 	{
-		_recvBuffer.CompleteWrite(sizeOfBytes);
-
-		int processLen = OnRecv();
-		_recvBuffer.CompleteRead(processLen);
+		DoDisconnect();
+		return;
 	}
+
+	_recvBuffer.CompleteWrite(sizeOfBytes);
+
+	int processLen = OnRecv();
+	_recvBuffer.CompleteRead(processLen);
+
 	RegisterRecv();
 }
 
@@ -228,6 +236,7 @@ void Session::DoDisconnect()
 	if (_isDisconnect == true)
 		return;
 	
+	::shutdown(_socket, SD_BOTH);
 	RegisterDisconnect();
 	_isDisconnect = true;
 }
