@@ -9,6 +9,7 @@ private:
 public:
 	ServerSession(HANDLE iocp);
 public:
+	void Send(shared_ptr<Packet> p) override;
 	void DoDisconnect() override;
 	void Send(shared_ptr<Packet> p) override;
 private:
@@ -26,7 +27,6 @@ public:
 	
 	void MeasureLatency(unsigned short packetId);
 	
-
 	string nickName;
 
 	multimap<unsigned short, clock_t> latencys;
