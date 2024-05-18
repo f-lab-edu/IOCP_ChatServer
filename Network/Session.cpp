@@ -11,9 +11,6 @@ _connectEvent(EventType::Connect), _disconnectEvent(EventType::Disconnect)
 	{
 		std::cout << WSAGetLastError() << std::endl;
 	}
-	_memoryLog = new vector<MemoryLog>();
-	_memoryLog->reserve(1000000);
-
 }
 
 Session::~Session()
@@ -23,21 +20,15 @@ Session::~Session()
 
 void Session::OnExecute(IoEvent* ioEvent, int SizeOfBytes)
 {
+
 	switch (ioEvent->m_eventType)
 	{
 	case EventType::Connect:
 		CompletedConnect();
 		break;
 	case EventType::Send:
-	{
 		CompletedSend(SizeOfBytes);
-		MemoryLog log;
-		log.thread_id = this_thread::get_id();
-		log.type = MLogType::GQCS;
-		log.flag = _isSendRegister;
-		AddMLog(log);
 		break;
-	}
 	case EventType::Recv:
 		CompletedRecv(SizeOfBytes);
 		break;
@@ -128,14 +119,7 @@ void Session::RegisterSend()
 	DWORD numOfBytes = 0;
 	auto result = ::WSASend(_socket, _sendEvent.buffers.data(), _sendEvent.buffers.size(), &numOfBytes, 0, &_sendEvent, nullptr);
 	if (result == 0)
-	{
-		MemoryLog log;
-		log.thread_id = this_thread::get_id();
-		log.type = MLogType::WSASend;
-		log.flag = _isSendRegister;
-		AddMLog(log);
 		CompletedSend(numOfBytes);
-	}
 	else if (SOCKET_ERROR == result)
 	{
 
@@ -192,12 +176,6 @@ void Session::CompletedSend(int sizeOfBytes)
 		_sendCompletePacket.clear();
 	}
 	_isSendRegister.store(false);
-
-	MemoryLog log;
-	log.thread_id = this_thread::get_id();
-	log.type = MLogType::FlagFalse;
-	log.flag = _isSendRegister;
-	AddMLog(log);
 }
 
 void Session::CompletedRecv(int sizeOfBytes)
@@ -236,14 +214,8 @@ void Session::Send(shared_ptr<Packet> p)
 
 	bool expected = false;
 	if (_isSendRegister.compare_exchange_strong(expected, true))
-	{
-		MemoryLog log;
-		log.thread_id = this_thread::get_id();
-		log.type = MLogType::FlagTrue;
-		log.flag = _isSendRegister;
-		AddMLog(log);
 		Flush = true;
-	}
+	
 	if (Flush == true)
 		RegisterSend();
 }
@@ -284,11 +256,4 @@ int Session::OnRecv()
 
 	return processLen;
 
-}
-
-void Session::AddMLog(MemoryLog& log)
-{
-	Mlock.lock();
-	_memoryLog->push_back(log);
-	Mlock.unlock();
 }

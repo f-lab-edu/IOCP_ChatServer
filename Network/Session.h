@@ -1,18 +1,4 @@
 #pragma once
-enum class MLogType
-{
-	GQCS,
-	WSASend,
-	FlagTrue,
-	FlagFalse,
-		
-};
-struct MemoryLog
-{
-	thread::id thread_id;
-	MLogType type;
-	bool flag;
-};
 class Session : public IocpObject
 {
 public:
@@ -67,9 +53,5 @@ private:
 	Buffer _recvBuffer;
 
 	atomic<bool> _isDisconnect;
-	vector<MemoryLog>* _memoryLog;
-public:
-	void AddMLog(MemoryLog& log);
-	mutex Mlock;
 };
 
