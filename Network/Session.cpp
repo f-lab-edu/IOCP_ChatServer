@@ -72,6 +72,7 @@ void Session::RegisterConnect()
 		if (errorCode != WSA_IO_PENDING)
 		{
 			std::cout << "wsaError: " << errorCode << std::endl;
+			DoDisconnect();
 			return;
 		}
 	}
@@ -88,6 +89,7 @@ void Session::RegisterDisconnect()
 		if (errorCode != WSA_IO_PENDING)
 		{
 			std::cout << "wsaError: " << errorCode << std::endl;
+			DoDisconnect();
 			return;
 		}
 	}
@@ -128,6 +130,7 @@ void Session::RegisterSend()
 		if (errorCode != ERROR_IO_PENDING)
 		{
 			std::cout << "wsaError: " << errorCode << std::endl;
+			DoDisconnect();
 			return;
 		}
 	}
@@ -155,8 +158,7 @@ void Session::RegisterRecv()
 		int errorCode = ::WSAGetLastError();
 		if (errorCode != ERROR_IO_PENDING) {
 			std::cout << "wsaError: " << errorCode << std::endl;
-			//RegisterRecv();
-			// OR Disconnect;
+			DoDisconnect();
 			return;
 		}
 	}
