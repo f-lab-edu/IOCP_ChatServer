@@ -18,7 +18,7 @@ void Room::Join(shared_ptr<ClientSession> session, Packet* EnterReqPacket)
 	session->_userInfo.userId = ++_id;
 
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
-#ifdef _DEBUG
+#ifdef LATENCY_RECORD_OPTION
 	p->SetSendTick(EnterReqPacket->GetSendTick());
 #endif
 	
@@ -36,7 +36,7 @@ void Room::Exit(shared_ptr<ClientSession> session, Packet* ExitReqPacket)
 	_sessions.erase(session);
 
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
-#ifdef _DEBUG
+#ifdef LATENCY_RECORD_OPTION
 	p->SetSendTick(ExitReqPacket->GetSendTick());
 #endif
 	

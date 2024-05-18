@@ -1,5 +1,4 @@
 #pragma once
-#include <assert.h>
 #include<string>
 
 using namespace std;
@@ -11,6 +10,8 @@ struct PacketHeader
 	unsigned short size;
 	unsigned short packetId;
 #ifdef _DEBUG
+#endif
+#ifdef LATENCY_RECORD_OPTION
 	clock_t sendTick;
 #endif	
 };
@@ -39,7 +40,7 @@ public:
 	Buffer* GetBuffer() { return _writeBuffer; }
 	unsigned short GetSize() { return _header.size; }
 	unsigned short GetPacketId() { return _header.packetId; }
-#ifdef _DEBUG
+#ifdef LATENCY_RECORD_OPTION
 	clock_t GetSendTick() {return _header.sendTick; }
 
 	inline void SetSendTick(clock_t tick)
@@ -47,7 +48,7 @@ public:
 		if(packetType != ePacketType::WRITE_PACKET)
 		{
 			cout << "set sendTick when packet type is not write";
-			assert(false);
+			xassert(false);
 			return;
 		}
 		_header.sendTick = tick;

@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BufferManager.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="CoreGlobal.h" />
     <ClInclude Include="IocpObject.h" />
     <ClInclude Include="ioEvent.h" />

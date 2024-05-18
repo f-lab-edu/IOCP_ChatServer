@@ -43,11 +43,11 @@ void ServerSession::OnConnected()
 			ChattingLogic();
 		});
 
-#ifdef _DEBUG
-	GThreadManager->ThreadStart([this]()
-		{
-			ServerSession::LatencyCheck(10);
-		});
+#ifdef LATENCY_RECORD_OPTION
+		GThreadManager->ThreadStart([this]()
+			{
+				ServerSession::LatencyCheck(10);
+			});
 #endif
 }
 
@@ -64,7 +64,7 @@ void ServerSession::OnAssemblePacket(Packet* packet)
 {
 	shared_ptr<Session> session = static_pointer_cast<ServerSession>(shared_from_this());
 
-#ifdef _DEBUG
+#ifdef LATENCY_RECORD_OPTION
 	AddLatency(packet->GetPacketId(), clock() - packet->GetSendTick());
 #endif
 	
