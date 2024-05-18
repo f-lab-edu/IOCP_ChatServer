@@ -1,4 +1,5 @@
 #pragma once
+#include <assert.h>
 #include<string>
 
 using namespace std;
@@ -38,8 +39,22 @@ public:
 	Buffer* GetBuffer() { return _writeBuffer; }
 	unsigned short GetSize() { return _header.size; }
 	unsigned short GetPacketId() { return _header.packetId; }
+#ifdef _DEBUG
 	clock_t GetSendTick() {return _header.sendTick; }
-	void SetSendTick(clock_t tick) { _header.sendTick = tick; }
+
+	inline void SetSendTick(clock_t tick)
+	{
+		if(packetType != ePacketType::WRITE_PACKET)
+		{
+			cout << "set sendTick when packet type is not write";
+			assert(false);
+			return;
+		}
+		_header.sendTick = tick;
+		memcpy(_writeBuffer->WritePos() - _idx, &_header, sizeof(PacketHeader));
+	}
+#endif
+	
 private:
 	PacketHeader _header;
 private:

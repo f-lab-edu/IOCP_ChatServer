@@ -27,6 +27,7 @@ Packet::Packet(unsigned char type)
 		xassert(false);
 		return;
 	}
+	memset(&_header,0,sizeof(PacketHeader));
 
 	packetType = type;
 	_writeBuffer = GBufferManager->AssignBuffer();
@@ -80,11 +81,11 @@ void Packet::endPacket(int packetId)
 	
 	if(endFlag == true)
 	{
-		std::cout << "endPacket Twice";
+		std::cout << "endpacket twice";
 		xassert(false);
 		return;
 	}
-	
+
 	endFlag = true;
 	_header.size = _idx;
 	memcpy(_writeBuffer->WritePos(), &_header, sizeof(PacketHeader));

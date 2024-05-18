@@ -32,6 +32,7 @@ void PacketHandler::C2S_CHAT_REQ_Handler(shared_ptr<Session> session, Packet* pa
 
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
 	p->SetSendTick(packet->GetSendTick());
+	
 	p->startPacket(Protocol::S2C_CHAT_RES);
 	p->push(chat);
 	p->endPacket(Protocol::S2C_CHAT_RES);
