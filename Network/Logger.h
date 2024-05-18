@@ -1,14 +1,7 @@
 #pragma once
-#include <string>
-#include <time.h>
-#include <concurrent_queue.h>
-#include <thread>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
 
-#include "Macro.h"
-#include "Singleton.h"
+
+
 
 #define LOG_BUFFER_SIZE 2048
 
