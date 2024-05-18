@@ -11,7 +11,7 @@ void Room::Broadcast(shared_ptr<Packet> packet)
 
 }
 
-void Room::Join(shared_ptr<ClientSession> session, Packet* EnterReqPacket)
+void Room::Join(shared_ptr<ClientSession> session, Packet* enterReqPacket)
 {
 	_sessions.insert(session);
 	
@@ -19,7 +19,7 @@ void Room::Join(shared_ptr<ClientSession> session, Packet* EnterReqPacket)
 
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
 #ifdef LATENCY_RECORD_OPTION
-	p->SetSendTick(EnterReqPacket->GetSendTick());
+	p->SetSendTick(enterReqPacket->GetSendTick());
 #endif
 	
 	p->startPacket(Protocol::S2C_ENTER_ROOM_NOTIFY);
@@ -31,13 +31,13 @@ void Room::Join(shared_ptr<ClientSession> session, Packet* EnterReqPacket)
 	Broadcast(p);
 }
 
-void Room::Exit(shared_ptr<ClientSession> session, Packet* ExitReqPacket)
+void Room::Exit(shared_ptr<ClientSession> session, Packet* exitReqPacket)
 {
 	_sessions.erase(session);
 
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
 #ifdef LATENCY_RECORD_OPTION
-	p->SetSendTick(ExitReqPacket->GetSendTick());
+	p->SetSendTick(exitReqPacket->GetSendTick());
 #endif
 	
 	string contents;
