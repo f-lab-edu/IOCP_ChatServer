@@ -1,0 +1,1 @@
+#define LATENCY_RECORD_OPTION
