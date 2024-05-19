@@ -130,6 +130,7 @@ public:
             xassert(false);
 			return;
 		}
+
 		unsigned char size = static_cast<unsigned char>(value.size());
 		push(size);
 

@@ -79,6 +79,7 @@ void Packet::endPacket(int packetId)
         return;
     }
 	
+
 	if(endFlag == true)
 	{
 		std::cout << "endpacket twice";

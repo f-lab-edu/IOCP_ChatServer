@@ -190,8 +190,8 @@ void Session::Connect(std::string ip, int port)
 
 void Session::Send(shared_ptr<Packet> p)
 {
-	if (p->GetStartFlag() == false || p->GetEndFlag() == false)
-		/* 크래시 */return;
+	//if (p->GetStartFlag() == false || p->GetEndFlag() == false)
+		///* 크래시 */return;
 
 	bool Flush = false;
 	
