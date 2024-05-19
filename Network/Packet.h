@@ -10,8 +10,10 @@ struct PacketHeader
 	unsigned short size;
 	unsigned short packetId;
 #ifdef _DEBUG
-	clock_t sendTick;
 #endif
+#ifdef LATENCY_RECORD_OPTION
+	clock_t sendTick;
+#endif	
 };
 #	pragma pack(pop)
 
@@ -38,22 +40,39 @@ public:
 	Buffer* GetBuffer() { return _writeBuffer; }
 	unsigned short GetSize() { return _header.size; }
 	unsigned short GetPacketId() { return _header.packetId; }
-#ifdef _DEBUG
-public:
-	clock_t GetSendTick(){return _header.sendTick; }
-	void SetSendTick(clock_t tick){ _header.sendTick = tick; }
+#ifdef LATENCY_RECORD_OPTION
+	clock_t GetSendTick() {return _header.sendTick; }
+
+	inline void SetSendTick(clock_t tick)
+	{
+		if(packetType != ePacketType::WRITE_PACKET)
+		{
+			cout << "set sendTick when packet type is not write";
+			xassert(false);
+			return;
+		}
+		_header.sendTick = tick;
+		memcpy(_writeBuffer->WritePos() - _idx, &_header, sizeof(PacketHeader));
+	}
 #endif
+	
 private:
 	PacketHeader _header;
 private:
-	/* Write  */
+	/* Write용 */
 	Buffer* _writeBuffer;
-	//                 
+	// 전송할 데이터 끝
 
 private:
-	/* Read  */
+	/* Read용 */
 	char* _readBuffer;
-
+	
+public:
+	bool GetStartFlag() { return startFlag; }
+	bool GetEndFlag() { return endFlag; }
+private:
+	bool startFlag = false;
+	bool endFlag = false;
 private:
 	unsigned char packetType = ePacketType::NONE;
 	unsigned short _idx = 0;
@@ -62,11 +81,26 @@ public:
 	template<typename T>
 	inline void push(T& value)
 	{
+		if(startFlag == false || endFlag == true)
+		{
+			std::cout << "push when startFlag:" + to_string(startFlag) + " endFlag: " + to_string(endFlag) << std::endl;
+			xassert(false);
+			return;
+		}
 		if (packetType != ePacketType::WRITE_PACKET)
-			/* ũ     */return;
+		{
+			std::cout << "push packet is not writeType";
+			xassert(false);
+			return;
+		}
+			
 
 		if (_idx + sizeof(T) > packetMaxSize)
-			/* ũ     */return;
+		{
+			std::cout << "push greater than maximum size"; 
+			xassert(false);
+			return;
+		}
 
 		memcpy(_writeBuffer->WritePos() + _idx, &value, sizeof(T));
 		_idx += sizeof(T);
@@ -75,16 +109,36 @@ public:
 
 	inline void push(string& value)
 	{
+		if (startFlag == false || endFlag == true)
+		{
+            std::cout << "push when startFlag:" + to_string(startFlag) + " endFlag: " + to_string(endFlag) << std::endl;
+            xassert(false);
+            return;
+        }
+
 		if (packetType != ePacketType::WRITE_PACKET)
-			/* ũ     */return;
+		{
+			std::cout << "push packet is not writeType"; 
+			xassert(false);
+			return;
+		}
+		
 
-		if (value.size() > 255) return;
-
-		unsigned char size = value.size();
+		if (value.size() > UCHAR_MAX)
+		{
+			std::cout << "push string size is greater than ucharMax"; 
+            xassert(false);
+			return;
+		}
+		unsigned char size = static_cast<unsigned char>(value.size());
 		push(size);
 
 		if (_idx + size > packetMaxSize)
-			/* ũ     */ return;
+		{
+        	std::cout << "push greater than maximum size"; 
+        	xassert(false);
+        	return;
+        }
 
 		memcpy(_writeBuffer->WritePos() + _idx, value.c_str(), value.size());
 		_idx += size;
@@ -93,11 +147,27 @@ public:
 
 	inline void push(char* value, int size)
 	{
+		if (startFlag == false || endFlag == true)
+		{
+			std::cout << "push when startFlag:" + to_string(startFlag) + " endFlag: " + to_string(endFlag) << std::endl;
+			xassert(false);
+			return;
+		}
+
 		if (packetType != ePacketType::WRITE_PACKET)
-			/* ũ     */return;
+		{
+        	std::cout << "push when packet is not writeType";
+        	xassert(false);
+        	return;
+        }	
+		
 		
 		if(_idx + size > packetMaxSize)
-			/* ũ     */return;
+		{
+			std::cout << "packetSize is greater than maximum";
+			xassert(false);
+			return;
+		}
 
 		memcpy(_writeBuffer->WritePos() + _idx, value, size);
 		_idx += size;
@@ -109,10 +179,19 @@ public:
 	inline void pop(T& value)
 	{
 		if (packetType != ePacketType::READ_PACKET)
-			/* ũ     */return;
+		{
+			std::cout << "pop when packet is not readType";
+			xassert(false);
+			return;
+		}
 
 		if(_idx + sizeof(T) > _header.size)
-			/* ũ     */return;
+		{
+			std::cout << "pop greater than packet size";
+			xassert(false);
+			return;
+        }
+		
 		
 		memcpy(&value, _readBuffer + _idx, sizeof(T));
 		_idx += sizeof(T);
@@ -121,13 +200,21 @@ public:
 	inline void pop(string& value)
 	{
 		if (packetType != ePacketType::READ_PACKET)
-			/* ũ     */return;
+		{
+			std::cout << "pop when packet is not readType";
+			xassert(false);
+			return;
+		}
 
 		unsigned char len;
 		pop(len);
 		
 		if (_idx + len > _header.size)
-			/* ũ     */return;
+		{
+			std::cout << "pop greater than packetSize";
+			xassert(false);
+			return;
+		}
 
 		value.append(static_cast<char*>(_readBuffer + _idx), len);
 		_idx += len;
