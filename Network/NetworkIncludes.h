@@ -3,6 +3,7 @@
 #include "Config.h"
 
 #include <iostream>
+#include <ctime>
 
 #include <vector>
 #include <map>

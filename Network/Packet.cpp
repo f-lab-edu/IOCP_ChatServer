@@ -29,6 +29,7 @@ Packet::Packet(unsigned char type)
 	}
 	memset(&_header,0,sizeof(PacketHeader));
 
+
 	packetType = type;
 	_writeBuffer = GBufferManager->AssignBuffer();
 }

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 class Session : public IocpObject
 {
@@ -20,6 +20,7 @@ public:
 	void CompletedDisconnect();
 
 	void Connect(std::string ip, int port);
+
 	virtual void Send(shared_ptr<Packet> p);
 	virtual void DoDisconnect();
 private:
@@ -29,7 +30,7 @@ private:
 	virtual void OnSend(int sendSize) {};
 	virtual void OnDisconnect() {};
 	
-	virtual void OnAssemblePacket(Packet* packet) {};
+	virtual void OnAssemblePacket(Packet* packet) { }
 public:
 	SOCKET GetSocket() { return _socket; }
 	Buffer* GetRecvBuffer() { return &_recvBuffer; }
@@ -52,5 +53,7 @@ private:
 	mutex _sendLock;
 
 	Buffer _recvBuffer;
+
+	atomic<bool> _isDisconnect;
 };
 

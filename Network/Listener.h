@@ -23,3 +23,4 @@ private:
 	function<shared_ptr<Session>(void)> _sessionCreateFunc;
 };
 
+				

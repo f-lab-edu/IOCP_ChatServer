@@ -46,6 +46,7 @@ DWORD WINAPI EchoThreadMain() {
 		else {
 		 	int errCode = ::WSAGetLastError();
 		 	std::cout << errCode;
+			ioEvent->owner->OnExecute(ioEvent, 0);
 		}
 	}
 }

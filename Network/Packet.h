@@ -40,6 +40,7 @@ public:
 	Buffer* GetBuffer() { return _writeBuffer; }
 	unsigned short GetSize() { return _header.size; }
 	unsigned short GetPacketId() { return _header.packetId; }
+
 #ifdef LATENCY_RECORD_OPTION
 	clock_t GetSendTick() {return _header.sendTick; }
 

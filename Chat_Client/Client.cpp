@@ -62,6 +62,8 @@ DWORD WINAPI IocpThreadMain() {
 		else {
 			int errCode = ::WSAGetLastError();
 			std::cout << std::system_category().message(errCode);
+			ioEvent->owner->OnExecute(ioEvent, 0);
+
 		}
 
 	}

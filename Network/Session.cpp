@@ -11,7 +11,6 @@ _connectEvent(EventType::Connect), _disconnectEvent(EventType::Disconnect)
 	{
 		std::cout << WSAGetLastError() << std::endl;
 	}
-
 }
 
 Session::~Session()
@@ -21,6 +20,7 @@ Session::~Session()
 
 void Session::OnExecute(IoEvent* ioEvent, int SizeOfBytes)
 {
+
 	switch (ioEvent->m_eventType)
 	{
 	case EventType::Connect:
@@ -72,6 +72,7 @@ void Session::RegisterConnect()
 		if (errorCode != WSA_IO_PENDING)
 		{
 			std::cout << "wsaError: " << errorCode << std::endl;
+			DoDisconnect();
 			return;
 		}
 	}
@@ -80,12 +81,15 @@ void Session::RegisterConnect()
 
 void Session::RegisterDisconnect()
 {
+	_disconnectEvent.Init();
+
 	if (false == NetworkUtil::DisconnectEx(_socket, &_disconnectEvent, TF_REUSE_SOCKET, 0))
 	{
 		int errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
 			std::cout << "wsaError: " << errorCode << std::endl;
+			DoDisconnect();
 			return;
 		}
 	}
@@ -114,7 +118,11 @@ void Session::RegisterSend()
 	}
 
 	DWORD numOfBytes = 0;
-	if (SOCKET_ERROR == ::WSASend(_socket, _sendEvent.buffers.data(), static_cast<DWORD>(_sendEvent.buffers.size()), &numOfBytes, 0, &_sendEvent, nullptr))
+  
+	auto result = ::WSASend(_socket, _sendEvent.buffers.data(), _sendEvent.buffers.size(), &numOfBytes, 0, &_sendEvent, nullptr);
+	if (result == 0)
+		CompletedSend(numOfBytes);
+	else if (SOCKET_ERROR == result)
 	{
 
 		int errorCode = ::WSAGetLastError();
@@ -122,9 +130,11 @@ void Session::RegisterSend()
 		if (errorCode != ERROR_IO_PENDING)
 		{
 			std::cout << "wsaError: " << errorCode << std::endl;
+			DoDisconnect();
 			return;
 		}
 	}
+	
 }
 
 void Session::RegisterRecv()
@@ -139,13 +149,16 @@ void Session::RegisterRecv()
 	DWORD flags = 0;
 
 	_recvEvent.owner = shared_from_this();
-	if (SOCKET_ERROR == ::WSARecv(_socket, &wsaBuf, 1, &numOfBytes, &flags, (OVERLAPPED*)&_recvEvent, nullptr)) {
+
+	auto result = ::WSARecv(_socket, &wsaBuf, 1, &numOfBytes, &flags, (OVERLAPPED*)&_recvEvent, nullptr);
+	if (result == 0)
+		CompletedRecv(numOfBytes);
+	else if (SOCKET_ERROR == result) {
 		
 		int errorCode = ::WSAGetLastError();
 		if (errorCode != ERROR_IO_PENDING) {
 			std::cout << "wsaError: " << errorCode << std::endl;
-			//RegisterRecv();
-			// OR Disconnect;
+			DoDisconnect();
 			return;
 		}
 	}
@@ -159,19 +172,35 @@ void Session::CompletedConnect()
 
 void Session::CompletedSend(int sizeOfBytes)
 {
+	if (sizeOfBytes == 0)
+	{
+		DoDisconnect();
+		return;
+	}
+
 	OnSend(sizeOfBytes);
 
 	_sendCompletePacket.clear();
-	_isSendRegister.store(false);
+
+	if(_sendRegisteredPacket.empty() == false)
+		RegisterSend();
+	else
+		_isSendRegister.store(false);
 }
 
 void Session::CompletedRecv(int sizeOfBytes)
 {
+	if (sizeOfBytes == 0)
+	{
+		DoDisconnect();
+		return;
+	}
+
 	_recvBuffer.CompleteWrite(sizeOfBytes);
-	
+
 	int processLen = OnRecv();
 	_recvBuffer.CompleteRead(processLen);
-	
+
 	RegisterRecv();
 }
 
@@ -190,23 +219,33 @@ void Session::Connect(std::string ip, int port)
 
 void Session::Send(shared_ptr<Packet> p)
 {
-	//if (p->GetStartFlag() == false || p->GetEndFlag() == false)
-		///* 크래시 */return;
+	if (_isDisconnect == true) 
+		return;
+  
+	if (p->GetStartFlag() == false || p->GetEndFlag() == false)
+		/* 크래시 */return;
+
 
 	bool Flush = false;
 	
 	_sendRegisteredPacket.push(move(p));
 
-	if (_isSendRegister.exchange(true) == false)
+	bool expected = false;
+	if (_isSendRegister.compare_exchange_strong(expected, true))
 		Flush = true;
-
+	
 	if (Flush == true)
 		RegisterSend();
 }
 
 void Session::DoDisconnect()
 {
+	if (_isDisconnect == true)
+		return;
+	
+	::shutdown(_socket, SD_BOTH);
 	RegisterDisconnect();
+	_isDisconnect = true;
 }
 
 
@@ -235,5 +274,5 @@ int Session::OnRecv()
 	}
 
 	return processLen;
-
 }
+

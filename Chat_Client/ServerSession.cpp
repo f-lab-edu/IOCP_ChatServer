@@ -29,6 +29,7 @@ void ServerSession::Send(shared_ptr<Packet> p)
 
 void ServerSession::OnConnected()
 {
+
 	cout << "서버 연결 완료" << endl;
 
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
@@ -62,6 +63,8 @@ void ServerSession::OnDisconnect()
 
 void ServerSession::OnAssemblePacket(Packet* packet)
 {
+	clock_t curTick = clock();
+
 	shared_ptr<Session> session = static_pointer_cast<ServerSession>(shared_from_this());
 
 #ifdef LATENCY_RECORD_OPTION
