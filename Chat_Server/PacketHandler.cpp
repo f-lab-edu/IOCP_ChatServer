@@ -4,13 +4,13 @@
 void PacketHandler::LATENCY_CHECK_Handler(shared_ptr<Session> session, Packet* packet)
 {
 	shared_ptr<ClientSession> cliSession = static_pointer_cast<ClientSession>(session);
-	clock_t tick;
-
-	packet->pop(tick);
-
+	
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
+#ifdef LATENCY_RECORD_OPTION
+	p->SetSendTick(packet->GetSendTick());
+#endif
+	
 	p->startPacket(Protocol::LATENCY_CHECK);
-	p->push(tick);
 	p->endPacket(Protocol::LATENCY_CHECK);
 	cliSession->Send(p);
 }
@@ -21,7 +21,7 @@ void PacketHandler::C2S_ENTER_ROOM_Handler(shared_ptr<Session> session, Packet* 
 
 	packet->pop(cliSession->_userInfo.nickName);
 	// 다른사람에게 입장 소식 알리기
-	g_Room->Join(cliSession);
+	g_Room->Join(cliSession, packet);
 }
 
 void PacketHandler::C2S_CHAT_REQ_Handler(shared_ptr<Session> session, Packet* packet)
@@ -34,6 +34,10 @@ void PacketHandler::C2S_CHAT_REQ_Handler(shared_ptr<Session> session, Packet* pa
 	chat = cliSession->_userInfo.nickName + ": " + chat;
 
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
+#ifdef LATENCY_RECORD_OPTION 
+	p->SetSendTick(packet->GetSendTick());
+#endif
+	
 	p->startPacket(Protocol::S2C_CHAT_RES);
 	p->push(chat);
 	p->endPacket(Protocol::S2C_CHAT_RES);
@@ -43,6 +47,5 @@ void PacketHandler::C2S_CHAT_REQ_Handler(shared_ptr<Session> session, Packet* pa
 void PacketHandler::C2S_EXIT_ROOM_Handler(shared_ptr<Session> session, Packet* packet)
 {
 	shared_ptr<ClientSession> cliSession = static_pointer_cast<ClientSession>(session);
-	g_Room->Exit(cliSession);
-
+	g_Room->Exit(cliSession, packet);
 }

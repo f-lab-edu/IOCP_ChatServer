@@ -8,14 +8,6 @@ ServerSession::ServerSession(HANDLE iocp)
 {
 }
 
-void ServerSession::Send(shared_ptr<Packet> p)
-{
-#ifdef _DEBUG
-	p->SetSendTick(clock());
-#endif
-	Session::Send(p);
-}
-
 void ServerSession::DoDisconnect()
 {
 	shared_ptr<Packet> p =make_shared<Packet>(ePacketType::WRITE_PACKET);
@@ -24,6 +16,15 @@ void ServerSession::DoDisconnect()
 	p->endPacket(Protocol::C2S_EXIT_ROOM);
 
 	Send(move(p));
+}
+
+void ServerSession::Send(shared_ptr<Packet> p)
+{
+#ifdef _DUBUG
+	p->SetSendTick(clock());
+#endif
+	
+	Session::Send(p);
 }
 
 void ServerSession::OnConnected()
@@ -40,14 +41,15 @@ void ServerSession::OnConnected()
 
 	GThreadManager->ThreadStart([this]()
 		{
-
 			ChattingLogic();
 		});
 
-	GThreadManager->ThreadStart([this]()
-		{
-			ServerSession::LatencyCheck(10);
-		});
+#ifdef LATENCY_RECORD_OPTION
+		GThreadManager->ThreadStart([this]()
+			{
+				ServerSession::LatencyCheck(10);
+			});
+#endif
 }
 
 void ServerSession::OnSend(int sendSize)
@@ -65,6 +67,10 @@ void ServerSession::OnAssemblePacket(Packet* packet)
 
 	shared_ptr<Session> session = static_pointer_cast<ServerSession>(shared_from_this());
 
+#ifdef LATENCY_RECORD_OPTION
+	AddLatency(packet->GetPacketId(), clock() - packet->GetSendTick());
+#endif
+	
 	switch (packet->GetPacketId())
 	{
 	case Protocol::LATENCY_CHECK:
@@ -106,48 +112,50 @@ DWORD WINAPI ServerSession::ChattingLogic()
 
 		Send(move(p));
 
-		Sleep(100);
+		Sleep(1);
 	}
 
 	return 0;
 }
 
-void ServerSession::AddLatency(clock_t latency)
+void ServerSession::AddLatency(unsigned short packetId, clock_t latency)
 {
-	latencys.push_back(move(latency));
+	latencys.emplace(packetId,latency);
 
-	if (latencys.size() >= latencyAvgInterval)
-	{
-		MeasureLatency();
-	}
+	if (latencys.count(packetId) >= latencyAvgInterval)
+		MeasureLatency(packetId);
+	
 }
 
 void ServerSession::LatencyCheck(int sleepMs)
 {
 	while (true/*TODO: disconnect flag*/)
 	{
-		clock_t tick = clock();
 		shared_ptr<Packet> latency = make_shared<Packet>(ePacketType::WRITE_PACKET);
 		latency->startPacket(Protocol::LATENCY_CHECK);
-		latency->push(tick);
 		latency->endPacket(Protocol::LATENCY_CHECK);
 		Send(latency);
 		
 		Sleep(sleepMs);
-
 	}
 }
 
-void ServerSession::MeasureLatency()
+void ServerSession::MeasureLatency(unsigned short packetId)
 {
-	auto avg = accumulate(latencys.begin(), latencys.end(), 0) / latencys.size();
-	cout << "Latency avg: " << avg << endl;
+	auto idRange = latencys.equal_range(packetId);
+	
+	auto avg = accumulate(idRange.first,idRange.second, 0,
+		[](int x, const multimap<unsigned short,clock_t>::value_type& y)
+		{
+			return x + y.second;
+		}) / latencys.size();
+	cout << nickName << "-> packetId: " << packetId <<  " Latency avg: " << avg << endl;
 
-	auto min = min_element(latencys.begin(), latencys.end());
-	cout << "Latency min: " << *min << endl;
+	auto min  = min_element(idRange.first,idRange.second);
+	cout << nickName << "-> packetId: " << packetId <<  " Latency min: " << min->second << endl;
 
-	auto max = max_element(latencys.begin(), latencys.end());
-	cout << "Latency max: " << *max << endl;
-	latencys.clear();
+	auto max = max_element(idRange.first,idRange.second);
+	cout << nickName << "-> packetId: " << packetId << " Latency max: " << max->second << endl;
+
+	latencys.erase(idRange.first,idRange.second);
 }
-

@@ -225,6 +225,7 @@ void Session::Send(shared_ptr<Packet> p)
 	if (p->GetStartFlag() == false || p->GetEndFlag() == false)
 		/* 크래시 */return;
 
+
 	bool Flush = false;
 	
 	_sendRegisteredPacket.push(move(p));

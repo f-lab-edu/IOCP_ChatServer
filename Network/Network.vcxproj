@@ -146,10 +146,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BufferManager.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="CoreGlobal.h" />
     <ClInclude Include="IocpObject.h" />
     <ClInclude Include="ioEvent.h" />
     <ClInclude Include="Listener.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="NetworkIncludes.h" />
     <ClInclude Include="NetworkUtil.h" />
@@ -157,6 +159,7 @@
     <ClInclude Include="Protocol.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Session.h" />
+    <ClInclude Include="Singleton.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="ThreadManager.h" />
   </ItemGroup>
