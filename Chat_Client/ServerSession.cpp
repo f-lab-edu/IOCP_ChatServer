@@ -159,3 +159,4 @@ void ServerSession::MeasureLatency(unsigned short packetId)
 
 	latencys.erase(idRange.first,idRange.second);
 }
+

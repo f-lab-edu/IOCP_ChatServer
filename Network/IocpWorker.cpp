@@ -1,13 +1,16 @@
 #include "stdafx.h"
 #include "IocpWorker.h"
 
-IocpWorker::IocpWorker(HANDLE handle)
-	:_iocpHandle(handle)
+void IocpWorker::Init()
 {
+	Worker::Init();
+	_iocpHandle = INVALID_HANDLE_VALUE; 
 }
 
 void IocpWorker::Work()
 {
+	xassert((_iocpHandle == INVALID_HANDLE_VALUE));
+	
    while(IsActive())
    {
       	DWORD bytesTransffered = 0; 

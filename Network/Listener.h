@@ -12,8 +12,8 @@ public:
 	void StartAccept(int maxAccept);
 	void RegisterAccept(AcceptEvent* ioEvent);
 	void CompleteAccept(AcceptEvent* acceptEvent);
+	HANDLE GetHandle() override { return reinterpret_cast<HANDLE>(_listenSocket); }
 
-	
 private:
 	HANDLE _iocpHandle;
 

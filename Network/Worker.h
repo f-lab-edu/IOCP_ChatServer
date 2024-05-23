@@ -3,9 +3,11 @@
 class Worker
 {
 public:
-    Worker();
+    Worker() = default;
     virtual ~Worker();
 
+    virtual void Init();
+    
     void StartWork(int threadCount);
     void StopWork();
    

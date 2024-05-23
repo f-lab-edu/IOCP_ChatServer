@@ -34,6 +34,7 @@ private:
 public:
 	SOCKET GetSocket() { return _socket; }
 	Buffer* GetRecvBuffer() { return &_recvBuffer; }
+	HANDLE GetHandle() override {return reinterpret_cast<HANDLE>(_socket); }
 
 	char _ip[INET_ADDRSTRLEN];
 	int _port = 0;

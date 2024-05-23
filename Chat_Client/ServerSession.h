@@ -8,6 +8,7 @@ private:
 	bool isTestMode;
 public:
 	ServerSession(HANDLE iocp);
+	~ServerSession() = default;
 public:
 	void DoDisconnect() override;
 	void Send(shared_ptr<Packet> p) override;
@@ -25,7 +26,7 @@ public:
 	void LatencyCheck(int sleepMs);
 	
 	void MeasureLatency(unsigned short packetId);
-	
+
 
 	string nickName;
 

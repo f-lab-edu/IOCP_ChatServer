@@ -2,14 +2,15 @@
 #include "stdafx.h"
 #include "ThreadManager.h"
 
-Worker::Worker()
-    : _isActive(false), _threadCount(0)
-{
-    
-}
-
 Worker::~Worker()
 {
+    StopWork();
+}
+
+void Worker::Init()
+{
+    _isActive = false;
+    _threadCount = 0;
 }
 
 void Worker::StartWork(int threadCount)
@@ -22,7 +23,7 @@ void Worker::StartWork(int threadCount)
     
     for(int i = 0; i < threadCount; i++)
     {
-        GThreadManager->ThreadStart([]()
+        GThreadManager->ThreadStart([this]()
         {
             Worker::Work();
         });

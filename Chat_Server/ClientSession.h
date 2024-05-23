@@ -11,6 +11,7 @@ class ClientSession : public Session
 {
 public:
 	ClientSession(HANDLE iocp);
+	~ClientSession() = default;
 
 private:
 	void OnConnected() override;
