@@ -149,6 +149,7 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="CoreGlobal.h" />
     <ClInclude Include="IocpObject.h" />
+    <ClInclude Include="IocpWorker.h" />
     <ClInclude Include="ioEvent.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="Logger.h" />
@@ -158,22 +159,27 @@
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Protocol.h" />
     <ClInclude Include="Buffer.h" />
+    <ClInclude Include="Service.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="ThreadManager.h" />
+    <ClInclude Include="Worker.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BufferManager.cpp" />
     <ClCompile Include="CoreGlobal.cpp" />
+    <ClCompile Include="IocpWorker.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="NetworkIncludes.cpp" />
     <ClCompile Include="NetworkUtil.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="Buffer.cpp" />
+    <ClCompile Include="Service.cpp" />
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="ThreadManager.cpp" />
+    <ClCompile Include="Worker.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

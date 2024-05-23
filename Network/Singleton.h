@@ -9,4 +9,4 @@ public:
             static T instance;
             return instance;
         }
-}
+};
