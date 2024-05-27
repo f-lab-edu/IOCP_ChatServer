@@ -7,10 +7,11 @@
 #include <mutex>
 #include <set>
 
+using SessionFactory = std::function<std::shared_ptr<Session>(void)>;
+
 class Session;
 class Service
 {
-    using SessionFactory = std::function<std::shared_ptr<Session>(void)>;
 public:
     Service(const WCHAR* ip, int port, SessionFactory factory);
     virtual ~Service();

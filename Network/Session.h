@@ -1,12 +1,13 @@
 #pragma once
 
 class Packet;
+class Service;
 
 class Session : public IocpObject
 {
 public:
-	Session(HANDLE iocpHandle);
-	~Session();
+	Session();
+	virtual ~Session();
 public:
 	virtual void OnExecute(IoEvent* event, int SizeOfBytes) override;
 
@@ -37,11 +38,13 @@ public:
 	SOCKET GetSocket() { return _socket; }
 	Buffer* GetRecvBuffer() { return &_recvBuffer; }
 
+	void SetService(Service* service) { _service = service; }
+
 	char _ip[INET_ADDRSTRLEN];
 	int _port = 0;
 private:
-	
-	HANDLE _iocpHandle;
+
+	Service* _service;
 	SOCKET _socket = INVALID_SOCKET;
 
 	IoEvent _connectEvent;

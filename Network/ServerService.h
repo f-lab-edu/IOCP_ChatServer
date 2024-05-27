@@ -5,7 +5,7 @@
 class ServerService : public Service
 {
 public:
-    ServerService() = default;
+    ServerService(const WCHAR* ip, int port, SessionFactory factory);
     ~ServerService() override = default;
 public:
     

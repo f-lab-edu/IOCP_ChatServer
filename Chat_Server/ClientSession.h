@@ -10,8 +10,8 @@ struct UserInfo
 class ClientSession : public Session
 {
 public:
-	ClientSession(HANDLE iocp);
-	~ClientSession() = default;
+	ClientSession() = default;
+	~ClientSession() override = default;
 
 	HANDLE GetHandle() override { return reinterpret_cast<HANDLE>(GetSocket()); }
 private:

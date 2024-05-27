@@ -43,7 +43,8 @@ std::shared_ptr<Session> Service::CreateSession()
     xassert((_sessionFactory == nullptr));
 
     shared_ptr<Session> session = _sessionFactory();
-
+    session->SetService(this);
+    
 	ULONG_PTR key = 0;
 	CreateIoCompletionPort((HANDLE)session->GetSocket(), _iocpHandle, key, 0);
 

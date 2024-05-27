@@ -1,16 +1,13 @@
 ﻿#include "stdafx.h"
 
 
-Session::Session(HANDLE iocpHandle) : _iocpHandle(iocpHandle), _recvEvent(EventType::Recv), 
+Session::Session() : _recvEvent(EventType::Recv), 
 _connectEvent(EventType::Connect), _disconnectEvent(EventType::Disconnect)
 , _recvBuffer(65535), _isSendRegister(false)
 {
 	_socket = ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
+	xassert((_socket == INVALID_SOCKET))
 
-	if (_socket == INVALID_SOCKET)
-	{
-		std::cout << WSAGetLastError() << std::endl;
-	}
 }
 
 Session::~Session()
@@ -52,7 +49,7 @@ void Session::RegisterConnect()
 		std::cout << "bind ERROR: " << errCode;
 	}
 
-	CreateIoCompletionPort((HANDLE)_socket, _iocpHandle, 0, 0);
+	CreateIoCompletionPort((HANDLE)_socket, _service->GetIocpHandle(), 0, 0);
 
 
 	DWORD numOfBytes = 0;
@@ -119,7 +116,7 @@ void Session::RegisterSend()
 
 	DWORD numOfBytes = 0;
   
-	auto result = ::WSASend(_socket, _sendEvent.buffers.data(), _sendEvent.buffers.size(), &numOfBytes, 0, &_sendEvent, nullptr);
+	auto result = ::WSASend(_socket, _sendEvent.buffers.data(),static_cast<DWORD>(_sendEvent.buffers.size()), &numOfBytes, 0, &_sendEvent, nullptr);
 	if (result == 0)
 		CompletedSend(numOfBytes);
 	else if (SOCKET_ERROR == result)

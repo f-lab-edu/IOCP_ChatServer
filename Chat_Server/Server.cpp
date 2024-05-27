@@ -7,21 +7,12 @@ HANDLE iocpHandle;
 int main() {
 	g_Room = new Room();
 
-	WSADATA wsaData;
-	if (0 != ::WSAStartup(MAKEWORD(2, 2), &wsaData))
-		return 0;
 
-	iocpHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
-
-
-	if (iocpHandle == INVALID_HANDLE_VALUE) {
-		std::cout << "iocpHanlde Invalid"; 
-		return 0;
-	}
-
-	for (int i = 0; i < 1; i++)
-		GThreadManager->ThreadStart(EchoThreadMain);
-
+	ServerService* service = new ServerService(L"127.0.0.1",7777,[](){
+		return make_shared<ClientSession>();
+	});
+	service->Open();
+	
 	GThreadManager->JoinAll();
 }
 

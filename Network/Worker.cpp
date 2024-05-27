@@ -15,7 +15,7 @@ void Worker::Init()
 
 void Worker::StartWork(int threadCount)
 {
-    xassert(threadCount <= 0);
+    xassert((threadCount <= 0));
     xassert(_isActive == true);
     
     _threadCount = threadCount; 
@@ -25,7 +25,7 @@ void Worker::StartWork(int threadCount)
     {
         GThreadManager->ThreadStart([this]()
         {
-            Worker::Work();
+            this->Work();
         });
     }
 }
