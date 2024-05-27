@@ -13,6 +13,7 @@ public:
 	ClientSession(HANDLE iocp);
 	~ClientSession() = default;
 
+	HANDLE GetHandle() override { return reinterpret_cast<HANDLE>(GetSocket()); }
 private:
 	void OnConnected() override;
 	void OnSend(int sendSize) override;
@@ -22,5 +23,6 @@ private:
 
 public:
 	UserInfo _userInfo;
+
 };
 

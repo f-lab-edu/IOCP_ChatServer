@@ -22,13 +22,6 @@ int main() {
 	for (int i = 0; i < 1; i++)
 		GThreadManager->ThreadStart(EchoThreadMain);
 
-
-	std::shared_ptr<Listener> listener = std::make_shared<Listener>(iocpHandle, [=]()
-		{
-			return make_shared<ClientSession>(iocpHandle);
-		});
-	listener->StartAccept(1);
-
 	GThreadManager->JoinAll();
 }
 

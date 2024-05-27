@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "ServerService.h"
 
+class ServerService;
 class Session; 
 class Listener : public IocpObject
 {

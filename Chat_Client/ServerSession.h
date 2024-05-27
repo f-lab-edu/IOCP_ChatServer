@@ -9,6 +9,9 @@ private:
 public:
 	ServerSession(HANDLE iocp);
 	~ServerSession() = default;
+
+	HANDLE GetHandle() override { return reinterpret_cast<HANDLE>(GetSocket()); }
+
 public:
 	void DoDisconnect() override;
 	void Send(shared_ptr<Packet> p) override;
@@ -32,5 +35,6 @@ public:
 
 	multimap<unsigned short, clock_t> latencys;
 	int latencyAvgInterval = 1000;
+
 };
 

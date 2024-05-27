@@ -1,4 +1,5 @@
-﻿#include "BufferManager.h"
+﻿#include "stdafx.h"
+#include "BufferManager.h"
 
 BufferManager::BufferManager(int bufferNum)
 {

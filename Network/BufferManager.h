@@ -1,10 +1,9 @@
 ﻿#pragma once
-#include "Buffer.h"
-#include <concurrent_queue.h>
-using namespace std;
-using namespace Concurrency;
+
 
 const long bufferSize = 196605;
+
+class Buffer;
 
 class BufferManager
 {
@@ -16,6 +15,6 @@ public:
 	void ReturnBuffer(Buffer* buffer);
 	
 private:
-	concurrent_queue<Buffer*> _buffers;
+	Concurrency::concurrent_queue<Buffer*> _buffers;
 };
 

@@ -6,7 +6,7 @@ class ServerService : public Service
 {
 public:
     ServerService() = default;
-    ~ServerService() override;
+    ~ServerService() override = default;
 public:
     
     void Open() override;

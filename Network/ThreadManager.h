@@ -1,10 +1,5 @@
 ﻿#pragma once
-#include <unordered_map>
-#include <thread>
-#include <functional>
-#include <mutex>
 
-using namespace std;
 
 extern thread_local int LThreadId;
 
@@ -16,13 +11,13 @@ public:
 
 public:
 	void ThreadInitialize();
-	void ThreadStart(function<void(void)> work);
+	void ThreadStart(std::function<void(void)> work);
 	void ThreadFinalize();
 
 	void JoinAll();
 private:
-	vector<thread> _threads;
+	std::vector<std::thread> _threads;
 
-	mutex lock;
+	std::mutex lock;
 };
 

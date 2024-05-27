@@ -1,13 +1,13 @@
 #pragma once
-#include <concrt.h>
 #include <functional>
-#include <map>
+#include <memory>
+#include <Esent.h>
+#include <concrt.h>
+#include "IocpWorker.h"
 #include <mutex>
 #include <set>
 
-#include "IocpWorker.h"
-#include "Session.h"
-
+class Session;
 class Service
 {
     using SessionFactory = std::function<std::shared_ptr<Session>(void)>;
@@ -35,7 +35,7 @@ private:
 private:
     HANDLE _iocpHandle;
     
-	WCHAR _ip[INET_ADDRSTRLEN];
+	WCHAR _ip[22];
 	int _port = 0;
     
     IocpWorker _iocpWorker;

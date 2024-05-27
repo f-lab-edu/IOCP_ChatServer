@@ -1,7 +1,5 @@
 #pragma once
-#include<string>
 
-using namespace std;
 
 #	pragma pack(push)
 #	pragma pack(1)
@@ -48,7 +46,7 @@ public:
 	{
 		if(packetType != ePacketType::WRITE_PACKET)
 		{
-			cout << "set sendTick when packet type is not write";
+			std::cout << "set sendTick when packet type is not write";
 			xassert(false);
 			return;
 		}
@@ -84,7 +82,7 @@ public:
 	{
 		if(startFlag == false || endFlag == true)
 		{
-			std::cout << "push when startFlag:" + to_string(startFlag) + " endFlag: " + to_string(endFlag) << std::endl;
+			std::cout << "push when startFlag:" + std::to_string(startFlag) + " endFlag: " + std::to_string(endFlag) << std::endl;
 			xassert(false);
 			return;
 		}
@@ -108,11 +106,11 @@ public:
 	}
 
 
-	inline void push(string& value)
+	inline void push(std::string& value)
 	{
 		if (startFlag == false || endFlag == true)
 		{
-            std::cout << "push when startFlag:" + to_string(startFlag) + " endFlag: " + to_string(endFlag) << std::endl;
+            std::cout << "push when startFlag:" + std::to_string(startFlag) + " endFlag: " + std::to_string(endFlag) << std::endl;
             xassert(false);
             return;
         }
@@ -127,7 +125,7 @@ public:
 
 		if (value.size() > UCHAR_MAX)
 		{
-			std::cout << "push string size is greater than ucharMax"; 
+			std::cout << "push std::string size is greater than ucharMax"; 
             xassert(false);
 			return;
 		}
@@ -151,7 +149,7 @@ public:
 	{
 		if (startFlag == false || endFlag == true)
 		{
-			std::cout << "push when startFlag:" + to_string(startFlag) + " endFlag: " + to_string(endFlag) << std::endl;
+			std::cout << "push when startFlag:" + std::to_string(startFlag) + " endFlag: " + std::to_string(endFlag) << std::endl;
 			xassert(false);
 			return;
 		}
@@ -199,7 +197,7 @@ public:
 		_idx += sizeof(T);
 	}
 
-	inline void pop(string& value)
+	inline void pop(std::string& value)
 	{
 		if (packetType != ePacketType::READ_PACKET)
 		{

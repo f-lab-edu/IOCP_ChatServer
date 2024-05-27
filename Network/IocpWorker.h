@@ -4,8 +4,8 @@
 class IocpWorker : public Worker
 {
 public:
-    IocpWorker();
-    ~IocpWorker() override;
+    IocpWorker() = default;
+    ~IocpWorker() override = default;
     
 public:
     void Init() override;
