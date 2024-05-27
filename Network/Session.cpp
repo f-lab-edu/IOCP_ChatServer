@@ -166,8 +166,9 @@ void Session::RegisterRecv()
 
 void Session::CompletedConnect()
 {
-	RegisterRecv();
 	OnConnected();
+	
+	RegisterRecv();
 }
 
 void Session::CompletedSend(int sizeOfBytes)

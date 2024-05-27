@@ -163,6 +163,7 @@
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Protocol.h" />
     <ClInclude Include="Buffer.h" />
+    <ClInclude Include="ServerService.h" />
     <ClInclude Include="Service.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="Singleton.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="NetworkUtil.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="Buffer.cpp" />
+    <ClCompile Include="ServerService.cpp" />
     <ClCompile Include="Service.cpp" />
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="stdafx.cpp" />

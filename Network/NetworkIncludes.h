@@ -23,6 +23,9 @@
 #include <mswsock.h>
 #pragma comment(lib, "ws2_32.lib")
 
+
+#include "Service.h"
+#include "ServerService.h"
 #include "Macro.h"
 #include "Buffer.h"
 #include "NetworkUtil.h"

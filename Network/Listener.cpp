@@ -4,8 +4,8 @@
 #include "IoEvent.h"
 #include "IocpObject.h"
 
-Listener::Listener(HANDLE iocpHandle, function<shared_ptr<Session>(void)> sessionCreateFunc) : _iocpHandle(iocpHandle)
-	, _sessionCreateFunc(sessionCreateFunc)
+
+Listener::Listener(ServerService* service) 
 {
 	_listenSocket = ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 
@@ -13,6 +13,7 @@ Listener::Listener(HANDLE iocpHandle, function<shared_ptr<Session>(void)> sessio
 	{
 		std::cout << WSAGetLastError() << std::endl;
 	}
+	_service = service;
 }
 
 void Listener::OnExecute(IoEvent* event, int SizeOfBytes)
@@ -24,9 +25,11 @@ void Listener::StartAccept(int maxAccept)
 {
 	SOCKADDR_IN addr;
 	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	//inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
-	addr.sin_port = htons(7777);
+	IN_ADDR address;
+	
+	::InetPtonW(AF_INET, _service->GetIp(), &address);
+	addr.sin_addr = address;
+	addr.sin_port = htons(_service->GetPort());
 
 	if (SOCKET_ERROR == ::bind(_listenSocket, reinterpret_cast<SOCKADDR*>(&addr), sizeof(SOCKADDR_IN))) {
 		int errCode = WSAGetLastError();
@@ -38,7 +41,7 @@ void Listener::StartAccept(int maxAccept)
 		return;
 
 	auto key = shared_from_this();
-	CreateIoCompletionPort((HANDLE)_listenSocket, _iocpHandle, (ULONG_PTR)&key, 0);
+	CreateIoCompletionPort((HANDLE)_listenSocket, _service->GetIocpHandle(), (ULONG_PTR)&key, 0);
 
 	for (int i = 0; i < maxAccept; i++) {
 		AcceptEvent* acceptEvent = new AcceptEvent();
@@ -52,11 +55,8 @@ void Listener::StartAccept(int maxAccept)
 void Listener::RegisterAccept(AcceptEvent* ioEvent)
 {
 	ioEvent->Init();
-	ioEvent->session = _sessionCreateFunc();
-	ULONG_PTR key = 0;
-	CreateIoCompletionPort((HANDLE)ioEvent->session->GetSocket(), _iocpHandle, (ULONG_PTR)&key, 0);
+	ioEvent->session = _service->CreateSession();
 
-	// ToDO 나중에 보관
 	DWORD bytesRecevied = 0;
 	if (false == NetworkUtil::AcceptEx(_listenSocket, ioEvent->session->GetSocket(), ioEvent->session->GetRecvBuffer()->WritePos(), 0,
 		sizeof(sockaddr_in) + 16, sizeof(sockaddr_in) + 16,
@@ -93,7 +93,8 @@ void Listener::CompleteAccept(AcceptEvent* acceptEvent)
 	}
 	inet_ntop(AF_INET,&sockAddr, (PSTR)& session->_ip, INET_ADDRSTRLEN);
 	session->_port = htons(sockAddr.sin_port);
+	
+	session->CompletedConnect();
 
-	session->RegisterRecv();
 	RegisterAccept(acceptEvent);
 }

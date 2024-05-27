@@ -2,7 +2,7 @@
 #include "Service.h"
 
 
-Service::Service(const char* ip, int port, SessionFactory factory)
+Service::Service(const WCHAR* ip, int port, SessionFactory factory)
 {
     _iocpHandle = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE,0,0,0);
     xassert((_iocpHandle == INVALID_HANDLE_VALUE));
@@ -43,6 +43,9 @@ std::shared_ptr<Session> Service::CreateSession()
     xassert((_sessionFactory == nullptr));
 
     shared_ptr<Session> session = _sessionFactory();
+
+	ULONG_PTR key = 0;
+	CreateIoCompletionPort((HANDLE)session->GetSocket(), _iocpHandle, key, 0);
 
     return std::move(session);
 }

@@ -1,4 +1,9 @@
 #pragma once
+#include "IocpObject.h"
+#include "ioEvent.h"
+#include "Buffer.h"
+
+class Packet;
 
 class Session : public IocpObject
 {
@@ -21,7 +26,7 @@ public:
 
 	void Connect(std::string ip, int port);
 
-	virtual void Send(shared_ptr<Packet> p);
+	virtual void Send(std::shared_ptr<Packet> p);
 	virtual void DoDisconnect();
 private:
 	int OnRecv();
@@ -34,7 +39,6 @@ private:
 public:
 	SOCKET GetSocket() { return _socket; }
 	Buffer* GetRecvBuffer() { return &_recvBuffer; }
-	HANDLE GetHandle() override {return reinterpret_cast<HANDLE>(_socket); }
 
 	char _ip[INET_ADDRSTRLEN];
 	int _port = 0;
@@ -48,13 +52,12 @@ private:
 	IoEvent _disconnectEvent;
 
 	SendEvent _sendEvent;
-	atomic<bool> _isSendRegister;
-	concurrent_queue<shared_ptr<Packet>> _sendRegisteredPacket;
-	vector<shared_ptr<Packet>> _sendCompletePacket;
-	mutex _sendLock;
+	std::atomic<bool> _isSendRegister;
+	Concurrency::concurrent_queue<std::shared_ptr<Packet>> _sendRegisteredPacket;
+	std::vector<std::shared_ptr<Packet>> _sendCompletePacket;
+	std::mutex _sendLock;
 
 	Buffer _recvBuffer;
 
-	atomic<bool> _isDisconnect;
+	std::atomic<bool> _isDisconnect;
 };
-
