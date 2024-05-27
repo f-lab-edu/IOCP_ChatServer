@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+class Service;
+
 class ServerSession : public Session
 {
 public:
@@ -7,7 +9,7 @@ public:
 private:
 	bool isTestMode;
 public:
-	ServerSession(HANDLE iocp);
+	ServerSession() = default;
 	~ServerSession() = default;
 
 	HANDLE GetHandle() override { return reinterpret_cast<HANDLE>(GetSocket()); }

@@ -207,9 +207,9 @@ void Session::CompletedDisconnect()
 	OnDisconnect();
 }
 
-void Session::Connect(std::string ip, int port)
+void Session::Connect(const WCHAR* ip, int port)
 {
-	memcpy(_ip, ip.c_str(), sizeof(_ip));
+	memcpy(_ip, ip, sizeof(_ip));
 	_port = port;
 
 	RegisterConnect();

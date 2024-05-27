@@ -1,13 +1,5 @@
 #include "stdafx.h"
 #include "ServerSession.h"
-
-
-
-ServerSession::ServerSession(HANDLE iocp)
-	: Session::Session(iocp)
-{
-}
-
 void ServerSession::DoDisconnect()
 {
 	shared_ptr<Packet> p =make_shared<Packet>(ePacketType::WRITE_PACKET);
@@ -38,6 +30,8 @@ void ServerSession::OnConnected()
 	p->endPacket(Protocol::C2S_ENTER_ROOM);
 
 	Send(move(p));
+
+	nickName = "!!!";
 
 	GThreadManager->ThreadStart([this]()
 		{

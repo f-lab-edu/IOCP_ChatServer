@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BufferManager.h" />
+    <ClInclude Include="ClientService.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="CoreGlobal.h" />
     <ClInclude Include="IocpObject.h" />
@@ -175,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BufferManager.cpp" />
+    <ClCompile Include="ClientService.cpp" />
     <ClCompile Include="CoreGlobal.cpp" />
     <ClCompile Include="IocpWorker.cpp" />
     <ClCompile Include="Listener.cpp" />

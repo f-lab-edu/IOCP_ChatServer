@@ -22,7 +22,7 @@ public:
 	void CompletedRecv(int sizeOfBytes);
 	void CompletedDisconnect();
 
-	void Connect(std::string ip, int port);
+	void Connect(const WCHAR* ip, int port);
 
 	virtual void Send(std::shared_ptr<Packet> p);
 	virtual void DoDisconnect();
@@ -40,7 +40,7 @@ public:
 
 	void SetService(Service* service) { _service = service; }
 
-	char _ip[INET_ADDRSTRLEN];
+	WCHAR _ip[INET_ADDRSTRLEN];
 	int _port = 0;
 private:
 
