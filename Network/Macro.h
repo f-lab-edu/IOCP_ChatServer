@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef _DEBUG
-    #define xassert(except) if(!except) { \
+    #define xassert(except) if(except) { \
         std::abort(); \
         }
 #else
