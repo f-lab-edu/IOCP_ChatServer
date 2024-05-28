@@ -18,6 +18,6 @@ public:
 private:
 	std::vector<std::thread> _threads;
 
-	std::mutex lock;
+	std::mutex _threadLock;
 };
 
