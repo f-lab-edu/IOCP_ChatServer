@@ -30,7 +30,7 @@ void Service::Open()
     xassert(_isOpen == true);
     
     _isOpen = true;
-    _iocpWorker.StartWork(2);
+    _iocpWorker.StartWork(1);
 }
 
 void Service::Close()

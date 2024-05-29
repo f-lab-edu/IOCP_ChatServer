@@ -22,7 +22,7 @@ public:
 	void CompletedRecv(int sizeOfBytes);
 	void CompletedDisconnect();
 
-	void Connect(const WCHAR* ip, int port);
+	virtual void Connect(const WCHAR* ip, int port);
 
 	virtual void Send(std::shared_ptr<Packet> p);
 	virtual void DoDisconnect();

@@ -10,6 +10,13 @@ void ServerSession::DoDisconnect()
 	Send(move(p));
 }
 
+void ServerSession::Connect(const WCHAR* ip, int port)
+{
+	_nickName = "A_" + to_string(GetSessionId());
+
+	Session::Connect(ip, port);
+}
+
 void ServerSession::Send(shared_ptr<Packet> p)
 {
 #ifdef LATENCY_RECORD_OPTION 
@@ -21,6 +28,7 @@ void ServerSession::Send(shared_ptr<Packet> p)
 
 void ServerSession::OnConnected()
 {
+	isTestMode = true;
 
 	cout << "서버 연결 완료" << endl;
 
@@ -31,7 +39,6 @@ void ServerSession::OnConnected()
 
 	Send(move(p));
 
-	_nickName = "A_" + to_string(GetSessionId());
 
 	GThreadManager->ThreadStart([this]()
 		{
@@ -39,10 +46,10 @@ void ServerSession::OnConnected()
 		});
 
 #ifdef LATENCY_RECORD_OPTION
-	GThreadManager->ThreadStart([this]()
+	/*GThreadManager->ThreadStart([this]()
 		{
 			ServerSession::LatencyCheck(1000);
-		});
+		});*/
 #endif
 }
 
@@ -128,14 +135,16 @@ void ServerSession::AddLatency(unsigned short packetId, clock_t latency)
 
 void ServerSession::LatencyCheck(int sleepMs)
 {
+	shared_ptr<Packet> latency = make_shared<Packet>(ePacketType::WRITE_PACKET);
+	latency->startPacket(Protocol::LATENCY_CHECK);
+	latency->endPacket(Protocol::LATENCY_CHECK);
+		
 	while (true/*TODO: disconnect flag*/)
 	{
-		shared_ptr<Packet> latency = make_shared<Packet>(ePacketType::WRITE_PACKET);
-		latency->startPacket(Protocol::LATENCY_CHECK);
-		latency->endPacket(Protocol::LATENCY_CHECK);
 		Send(latency);
-		
-		Sleep(sleepMs);
+
+		std::chrono::milliseconds sleep_ms(sleepMs);
+		this_thread::sleep_for(sleep_ms);
 	}
 }
 

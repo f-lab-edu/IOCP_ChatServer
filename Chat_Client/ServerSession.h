@@ -16,6 +16,7 @@ public:
 
 public:
 	void DoDisconnect() override;
+	void Connect(const WCHAR* ip, int port) override;
 	void Send(shared_ptr<Packet> p) override;
 private:
 	void OnConnected() override;
