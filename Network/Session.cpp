@@ -1,16 +1,13 @@
 ﻿#include "stdafx.h"
 
 
-Session::Session(HANDLE iocpHandle) : _iocpHandle(iocpHandle), _recvEvent(EventType::Recv), 
+Session::Session() : _recvEvent(EventType::Recv), 
 _connectEvent(EventType::Connect), _disconnectEvent(EventType::Disconnect)
 , _recvBuffer(65535), _isSendRegister(false)
 {
 	_socket = ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
+	xassert((_socket == INVALID_SOCKET))
 
-	if (_socket == INVALID_SOCKET)
-	{
-		std::cout << WSAGetLastError() << std::endl;
-	}
 }
 
 Session::~Session()
@@ -52,14 +49,15 @@ void Session::RegisterConnect()
 		std::cout << "bind ERROR: " << errCode;
 	}
 
-	CreateIoCompletionPort((HANDLE)_socket, _iocpHandle, 0, 0);
-
-
 	DWORD numOfBytes = 0;
 	SOCKADDR_IN targetAddr;
 	::memset(&targetAddr, 0, sizeof(targetAddr));
-	targetAddr.sin_family = AF_INET;
-	inet_pton(AF_INET, (PCSTR)_ip, &targetAddr.sin_addr);
+	targetAddr.sin_family = AF_INET;	
+	IN_ADDR address;
+	
+	::InetPtonW(AF_INET, _service->GetIp(), &address);
+	targetAddr.sin_addr = address;
+
 	targetAddr.sin_port = ::htons(_port);
 
 
@@ -119,7 +117,7 @@ void Session::RegisterSend()
 
 	DWORD numOfBytes = 0;
   
-	auto result = ::WSASend(_socket, _sendEvent.buffers.data(), _sendEvent.buffers.size(), &numOfBytes, 0, &_sendEvent, nullptr);
+	auto result = ::WSASend(_socket, _sendEvent.buffers.data(),static_cast<DWORD>(_sendEvent.buffers.size()), &numOfBytes, 0, &_sendEvent, nullptr);
 	if (result == 0)
 		CompletedSend(numOfBytes);
 	else if (SOCKET_ERROR == result)
@@ -166,8 +164,9 @@ void Session::RegisterRecv()
 
 void Session::CompletedConnect()
 {
-	RegisterRecv();
 	OnConnected();
+	
+	RegisterRecv();
 }
 
 void Session::CompletedSend(int sizeOfBytes)
@@ -182,9 +181,9 @@ void Session::CompletedSend(int sizeOfBytes)
 
 	_sendCompletePacket.clear();
 
-	if(_sendRegisteredPacket.empty() == false)
+	/*if(_sendRegisteredPacket.empty() == false)
 		RegisterSend();
-	else
+	else*/
 		_isSendRegister.store(false);
 }
 
@@ -209,9 +208,9 @@ void Session::CompletedDisconnect()
 	OnDisconnect();
 }
 
-void Session::Connect(std::string ip, int port)
+void Session::Connect(const WCHAR* ip, int port)
 {
-	memcpy(_ip, ip.c_str(), sizeof(_ip));
+	memcpy(_ip, ip, sizeof(_ip));
 	_port = port;
 
 	RegisterConnect();
@@ -275,4 +274,5 @@ int Session::OnRecv()
 
 	return processLen;
 }
+
 

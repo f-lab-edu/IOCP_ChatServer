@@ -41,5 +41,5 @@ public:
 	SendEvent() : IoEvent(EventType::Send) {}
 
 public:
-	vector<WSABUF> buffers;
+	std::vector<WSABUF> buffers;
 };

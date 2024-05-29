@@ -1,10 +1,13 @@
 #pragma once
 
+class Packet;
+class Service;
+
 class Session : public IocpObject
 {
 public:
-	Session(HANDLE iocpHandle);
-	~Session();
+	Session();
+	virtual ~Session();
 public:
 	virtual void OnExecute(IoEvent* event, int SizeOfBytes) override;
 
@@ -19,9 +22,9 @@ public:
 	void CompletedRecv(int sizeOfBytes);
 	void CompletedDisconnect();
 
-	void Connect(std::string ip, int port);
+	virtual void Connect(const WCHAR* ip, int port);
 
-	virtual void Send(shared_ptr<Packet> p);
+	virtual void Send(std::shared_ptr<Packet> p);
 	virtual void DoDisconnect();
 private:
 	int OnRecv();
@@ -35,11 +38,17 @@ public:
 	SOCKET GetSocket() { return _socket; }
 	Buffer* GetRecvBuffer() { return &_recvBuffer; }
 
-	char _ip[INET_ADDRSTRLEN];
+	void SetService(Service* service) { _service = service; }
+
+	WCHAR _ip[INET_ADDRSTRLEN];
 	int _port = 0;
+public:
+	int GetSessionId() { return _sessionId; }
+	void SetSessionId(int id) { _sessionId = id; }
 private:
-	
-	HANDLE _iocpHandle;
+	int _sessionId;
+
+	Service* _service;
 	SOCKET _socket = INVALID_SOCKET;
 
 	IoEvent _connectEvent;
@@ -47,13 +56,12 @@ private:
 	IoEvent _disconnectEvent;
 
 	SendEvent _sendEvent;
-	atomic<bool> _isSendRegister;
-	concurrent_queue<shared_ptr<Packet>> _sendRegisteredPacket;
-	vector<shared_ptr<Packet>> _sendCompletePacket;
-	mutex _sendLock;
+	std::atomic<bool> _isSendRegister;
+	Concurrency::concurrent_queue<std::shared_ptr<Packet>> _sendRegisteredPacket;
+	std::vector<std::shared_ptr<Packet>> _sendCompletePacket;
+	std::mutex _sendLock;
 
 	Buffer _recvBuffer;
 
-	atomic<bool> _isDisconnect;
+	std::atomic<bool> _isDisconnect;
 };
-

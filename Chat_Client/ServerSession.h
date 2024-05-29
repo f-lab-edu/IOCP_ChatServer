@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+class Service;
+
 class ServerSession : public Session
 {
 public:
@@ -7,9 +9,14 @@ public:
 private:
 	bool isTestMode;
 public:
-	ServerSession(HANDLE iocp);
+	ServerSession() = default;
+	~ServerSession() = default;
+
+	HANDLE GetHandle() override { return reinterpret_cast<HANDLE>(GetSocket()); }
+
 public:
 	void DoDisconnect() override;
+	void Connect(const WCHAR* ip, int port) override;
 	void Send(shared_ptr<Packet> p) override;
 private:
 	void OnConnected() override;
@@ -25,11 +32,13 @@ public:
 	void LatencyCheck(int sleepMs);
 	
 	void MeasureLatency(unsigned short packetId);
-	
 
-	string nickName;
 
-	multimap<unsigned short, clock_t> latencys;
+	string _nickName;
+
+	multimap<unsigned short, clock_t> _latencys;
+	mutex _latencyLock;
 	int latencyAvgInterval = 1000;
+
 };
 

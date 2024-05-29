@@ -55,6 +55,13 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="Macro.h" />
+    <ClInclude Include="Config.h" />
+    <ClInclude Include="IocpWorker.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="ServerService.h" />
+    <ClInclude Include="Service.h" />
+    <ClInclude Include="Singleton.h" />
+    <ClInclude Include="Worker.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Buffer.cpp">
@@ -87,5 +94,9 @@
     <ClCompile Include="Packet.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="IocpWorker.cpp" />
+    <ClCompile Include="ServerService.cpp" />
+    <ClCompile Include="Service.cpp" />
+    <ClCompile Include="Worker.cpp" />
   </ItemGroup>
 </Project>

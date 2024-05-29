@@ -24,6 +24,8 @@ void ThreadManager::ThreadStart(function<void(void)> work)
 			ThreadFinalize();
 		});
 
+	
+	lock_guard lock(_threadLock);
 	_threads.push_back(move(startThread));
 }
 
