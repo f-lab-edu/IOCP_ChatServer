@@ -40,15 +40,17 @@ void Service::Close()
 
 std::shared_ptr<Session> Service::CreateSession()
 {
+    static int idGenerator = 1;
     xassert((_sessionFactory == nullptr));
 
     shared_ptr<Session> session = _sessionFactory();
     session->SetService(this);
+    session->SetSessionId(idGenerator++);
     
 	ULONG_PTR key = 0;
 	CreateIoCompletionPort((HANDLE)session->GetSocket(), _iocpHandle, key, 0);
 
-    return std::move(session);
+    return session;
 }
 
 void Service::AddSession(std::shared_ptr<Session> session)

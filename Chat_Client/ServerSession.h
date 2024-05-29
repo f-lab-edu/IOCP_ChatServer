@@ -33,9 +33,10 @@ public:
 	void MeasureLatency(unsigned short packetId);
 
 
-	string nickName;
+	string _nickName;
 
-	multimap<unsigned short, clock_t> latencys;
+	multimap<unsigned short, clock_t> _latencys;
+	mutex _latencyLock;
 	int latencyAvgInterval = 1000;
 
 };

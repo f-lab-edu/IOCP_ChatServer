@@ -12,7 +12,7 @@ void ServerSession::DoDisconnect()
 
 void ServerSession::Send(shared_ptr<Packet> p)
 {
-#ifdef _DUBUG
+#ifdef LATENCY_RECORD_OPTION 
 	p->SetSendTick(clock());
 #endif
 	
@@ -26,12 +26,12 @@ void ServerSession::OnConnected()
 
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
 	p->startPacket(Protocol::C2S_ENTER_ROOM);
-	p->push(nickName);
+	p->push(_nickName);
 	p->endPacket(Protocol::C2S_ENTER_ROOM);
 
 	Send(move(p));
 
-	nickName = "!!!";
+	_nickName = "A_" + to_string(GetSessionId());
 
 	GThreadManager->ThreadStart([this]()
 		{
@@ -39,10 +39,10 @@ void ServerSession::OnConnected()
 		});
 
 #ifdef LATENCY_RECORD_OPTION
-		GThreadManager->ThreadStart([this]()
-			{
-				ServerSession::LatencyCheck(10);
-			});
+	GThreadManager->ThreadStart([this]()
+		{
+			ServerSession::LatencyCheck(1000);
+		});
 #endif
 }
 
@@ -106,7 +106,7 @@ DWORD WINAPI ServerSession::ChattingLogic()
 
 		Send(move(p));
 
-		Sleep(1);
+		Sleep(10);
 	}
 
 	return 0;
@@ -114,9 +114,14 @@ DWORD WINAPI ServerSession::ChattingLogic()
 
 void ServerSession::AddLatency(unsigned short packetId, clock_t latency)
 {
-	latencys.emplace(packetId,latency);
+	int count = 0;
+	{
+		lock_guard<mutex> lock(_latencyLock);
 
-	if (latencys.count(packetId) >= latencyAvgInterval)
+		_latencys.emplace(packetId,latency);
+		count = _latencys.count(packetId);
+	}
+	if  (count >= latencyAvgInterval)
 		MeasureLatency(packetId);
 	
 }
@@ -136,21 +141,28 @@ void ServerSession::LatencyCheck(int sleepMs)
 
 void ServerSession::MeasureLatency(unsigned short packetId)
 {
-	auto idRange = latencys.equal_range(packetId);
-	
-	auto avg = accumulate(idRange.first,idRange.second, 0,
-		[](int x, const multimap<unsigned short,clock_t>::value_type& y)
-		{
-			return x + y.second;
-		}) / latencys.size();
-	cout << nickName << "-> packetId: " << packetId <<  " Latency avg: " << avg << endl;
 
-	auto min  = min_element(idRange.first,idRange.second);
-	cout << nickName << "-> packetId: " << packetId <<  " Latency min: " << min->second << endl;
+	long long avg = 0;
+	int max = 0;
+	int min = 0;
 
-	auto max = max_element(idRange.first,idRange.second);
-	cout << nickName << "-> packetId: " << packetId << " Latency max: " << max->second << endl;
+	{
 
-	latencys.erase(idRange.first,idRange.second);
+		lock_guard lock(_latencyLock);
+		auto idRange = _latencys.equal_range(packetId);
+		avg = accumulate(idRange.first,idRange.second, 0,
+			[](int x, const multimap<unsigned short,clock_t>::value_type& y)
+			{
+				return x + y.second;
+			}) / _latencys.size();
+		min  = min_element(idRange.first,idRange.second)->second;
+		max = max_element(idRange.first,idRange.second)->second;
+		_latencys.erase(idRange.first,idRange.second);
+
+	}
+	std::cout << _nickName << "-> packetId: " << packetId <<  " Latency avg: " << avg << endl;
+	std::cout << _nickName << "-> packetId: " << packetId <<  " Latency min: " << min << endl;
+	std::cout << _nickName << "-> packetId: " << packetId << " Latency max: " << max << endl;
+
 }
 

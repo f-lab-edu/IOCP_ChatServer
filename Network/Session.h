@@ -42,7 +42,11 @@ public:
 
 	WCHAR _ip[INET_ADDRSTRLEN];
 	int _port = 0;
+public:
+	int GetSessionId() { return _sessionId; }
+	void SetSessionId(int id) { _sessionId = id; }
 private:
+	int _sessionId;
 
 	Service* _service;
 	SOCKET _socket = INVALID_SOCKET;

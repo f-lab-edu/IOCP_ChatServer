@@ -49,14 +49,15 @@ void Session::RegisterConnect()
 		std::cout << "bind ERROR: " << errCode;
 	}
 
-	CreateIoCompletionPort((HANDLE)_socket, _service->GetIocpHandle(), 0, 0);
-
-
 	DWORD numOfBytes = 0;
 	SOCKADDR_IN targetAddr;
 	::memset(&targetAddr, 0, sizeof(targetAddr));
-	targetAddr.sin_family = AF_INET;
-	inet_pton(AF_INET, (PCSTR)_ip, &targetAddr.sin_addr);
+	targetAddr.sin_family = AF_INET;	
+	IN_ADDR address;
+	
+	::InetPtonW(AF_INET, _service->GetIp(), &address);
+	targetAddr.sin_addr = address;
+
 	targetAddr.sin_port = ::htons(_port);
 
 
@@ -180,9 +181,9 @@ void Session::CompletedSend(int sizeOfBytes)
 
 	_sendCompletePacket.clear();
 
-	if(_sendRegisteredPacket.empty() == false)
+	/*if(_sendRegisteredPacket.empty() == false)
 		RegisterSend();
-	else
+	else*/
 		_isSendRegister.store(false);
 }
 

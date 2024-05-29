@@ -7,8 +7,6 @@ struct PacketHeader
 {
 	unsigned short size;
 	unsigned short packetId;
-#ifdef _DEBUG
-#endif
 #ifdef LATENCY_RECORD_OPTION
 	clock_t sendTick;
 #endif	
