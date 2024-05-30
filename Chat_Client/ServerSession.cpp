@@ -62,7 +62,7 @@ void ServerSession::OnDisconnect()
 
 }
 
-void ServerSession::OnAssemblePacket(Packet* packet)
+void ServerSession::OnAssemblePacket(std::shared_ptr<Packet> packet)
 {
 	clock_t curTick = clock();
 

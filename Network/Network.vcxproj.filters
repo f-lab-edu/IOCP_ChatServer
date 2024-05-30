@@ -56,12 +56,20 @@
     </ClInclude>
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Config.h" />
-    <ClInclude Include="IocpWorker.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="ServerService.h" />
     <ClInclude Include="Service.h" />
     <ClInclude Include="Singleton.h" />
-    <ClInclude Include="Worker.h" />
+    <ClInclude Include="ClientService.h" />
+    <ClInclude Include="IocpWorker.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Worker.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="LogicWorker.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Buffer.cpp">
@@ -94,9 +102,17 @@
     <ClCompile Include="Packet.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="IocpWorker.cpp" />
     <ClCompile Include="ServerService.cpp" />
     <ClCompile Include="Service.cpp" />
-    <ClCompile Include="Worker.cpp" />
+    <ClCompile Include="ClientService.cpp" />
+    <ClCompile Include="IocpWorker.cpp">
+      <Filter>Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="Worker.cpp">
+      <Filter>Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="LogicWorker.cpp">
+      <Filter>Thread</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

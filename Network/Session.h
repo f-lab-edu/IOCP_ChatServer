@@ -33,7 +33,8 @@ private:
 	virtual void OnSend(int sendSize) {};
 	virtual void OnDisconnect() {};
 	
-	virtual void OnAssemblePacket(Packet* packet) { }
+public:
+	virtual void OnAssemblePacket(std::shared_ptr<Packet> packet) { }
 public:
 	SOCKET GetSocket() { return _socket; }
 	Buffer* GetRecvBuffer() { return &_recvBuffer; }

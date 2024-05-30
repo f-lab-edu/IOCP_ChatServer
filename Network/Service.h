@@ -4,6 +4,7 @@
 #include <Esent.h>
 #include <concrt.h>
 #include "IocpWorker.h"
+#include "LogicWorker.h"
 #include <mutex>
 #include <set>
 
@@ -26,6 +27,7 @@ public:
     void AddSession(std::shared_ptr<Session> session);
     void DeleteSession(std::shared_ptr<Session>&& session);
 
+    void PushJob(std::shared_ptr<Packet> p) { _logicWorker.PushJob(move(p)); }
 public:
     const WCHAR* GetIp() { return _ip; }
     int GetPort() { return _port; }
@@ -40,6 +42,7 @@ private:
 	int _port = 0;
     
     IocpWorker _iocpWorker;
+    LogicWorker _logicWorker;
 
     std::mutex _sessionContainerLock;
     std::set<std::shared_ptr<Session>> _sessions;

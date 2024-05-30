@@ -14,7 +14,7 @@ void ClientSession::OnDisconnect()
 {
 }
 
-void ClientSession::OnAssemblePacket(Packet* packet)
+void ClientSession::OnAssemblePacket(std::shared_ptr<Packet> packet)
 {
 	shared_ptr<Session> session = static_pointer_cast<Session>(shared_from_this());
 

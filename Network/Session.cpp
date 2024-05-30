@@ -266,8 +266,9 @@ int Session::OnRecv()
 		if (recvSize - processLen < header.size)
 			break;
 
-		Packet p(ePacketType::READ_PACKET, buffer + processLen);
-		OnAssemblePacket(&p);
+		shared_ptr<Packet> p = make_shared<Packet>(ePacketType::READ_PACKET, buffer + processLen);
+		p->SetOwner(this);
+		_service->PushJob(move(p));
 
 		processLen += header.size;
 	}

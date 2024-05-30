@@ -23,7 +23,7 @@ private:
 	void OnSend(int sendSize) override;
 	void OnDisconnect() override;
 
-	void OnAssemblePacket(Packet* packet) override;
+	void OnAssemblePacket(std::shared_ptr<Packet> packet) override;
 	
 public:
 	DWORD WINAPI ChattingLogic();

@@ -160,6 +160,7 @@
     <ClInclude Include="ioEvent.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="LogicWorker.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="NetworkIncludes.h" />
     <ClInclude Include="NetworkUtil.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="CoreGlobal.cpp" />
     <ClCompile Include="IocpWorker.cpp" />
     <ClCompile Include="Listener.cpp" />
+    <ClCompile Include="LogicWorker.cpp" />
     <ClCompile Include="NetworkIncludes.cpp" />
     <ClCompile Include="NetworkUtil.cpp" />
     <ClCompile Include="Packet.cpp" />
