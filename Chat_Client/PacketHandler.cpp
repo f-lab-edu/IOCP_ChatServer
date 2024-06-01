@@ -10,7 +10,7 @@ void PacketHandler::LATENCY_CHECK_Handler(shared_ptr<Session> session, std::shar
 #endif
 }
 
-void PacketHandler::S2C_ENTER_ROOM_NOTIFY_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)
+void PacketHandler::S2C_ENTER_MAP_NOTIFY_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)
 {
 	string str;
 	packet->pop(str);
@@ -22,9 +22,9 @@ void PacketHandler::S2C_CHAT_RES_Handler(shared_ptr<Session> session, std::share
 	string chat;
 	packet->pop(chat);
 	cout << chat << endl;
-  }
+}
 
-void PacketHandler::S2C_EXIT_ROOM_NOTIFY_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)
+void PacketHandler::S2C_EXIT_MAP_NOTIFY_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)
 {
 	string str;
 	packet->pop(str);

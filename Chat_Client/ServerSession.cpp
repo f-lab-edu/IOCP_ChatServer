@@ -4,8 +4,8 @@ void ServerSession::DoDisconnect()
 {
 	shared_ptr<Packet> p =make_shared<Packet>(ePacketType::WRITE_PACKET);
 
-	p->startPacket(Protocol::C2S_EXIT_ROOM);
-	p->endPacket(Protocol::C2S_EXIT_ROOM);
+	p->startPacket(Protocol::C2S_EXIT_MAP);
+	p->endPacket(Protocol::C2S_EXIT_MAP);
 
 	Send(move(p));
 }
@@ -33,9 +33,9 @@ void ServerSession::OnConnected()
 	cout << "서버 연결 완료" << endl;
 
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
-	p->startPacket(Protocol::C2S_ENTER_ROOM);
+	p->startPacket(Protocol::C2S_ENTER_MAP);
 	p->push(_nickName);
-	p->endPacket(Protocol::C2S_ENTER_ROOM);
+	p->endPacket(Protocol::C2S_ENTER_MAP);
 
 	Send(move(p));
 
@@ -77,14 +77,14 @@ void ServerSession::OnAssemblePacket(std::shared_ptr<Packet> packet)
 	case Protocol::LATENCY_CHECK:
 		PacketHandler::LATENCY_CHECK_Handler(session, packet);
 		break;
-	case Protocol::S2C_ENTER_ROOM_NOTIFY:
-		PacketHandler::S2C_ENTER_ROOM_NOTIFY_Handler(session, packet);
+	case Protocol::S2C_ENTER_MAP_NOTIFY:
+		PacketHandler::S2C_ENTER_MAP_NOTIFY_Handler(session, packet);
 		break;
 	case Protocol::S2C_CHAT_RES:
 		PacketHandler::S2C_CHAT_RES_Handler(session, packet);
 		break;
-	case Protocol::S2C_EXIT_ROOM_NOTIFY:
-		PacketHandler::S2C_EXIT_ROOM_NOTIFY_Handler(session, packet);
+	case Protocol::S2C_EXIT_MAP_NOTIFY:
+		PacketHandler::S2C_EXIT_MAP_NOTIFY_Handler(session, packet);
 		break;
 	}
 }

@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "PacketHandler.h"
 
+#include "GameServerService.h"
+
 void PacketHandler::LATENCY_CHECK_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)
 {
 	shared_ptr<ClientSession> cliSession = static_pointer_cast<ClientSession>(session);
@@ -15,15 +17,30 @@ void PacketHandler::LATENCY_CHECK_Handler(shared_ptr<Session> session, std::shar
 	cliSession->Send(p);
 }
 
-void PacketHandler::C2S_ENTER_ROOM_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)
+void PacketHandler::C2S_ENTER_MAP_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)
 {
 	shared_ptr<ClientSession> cliSession = static_pointer_cast<ClientSession>(session);
 
 	packet->pop(cliSession->_userInfo.nickName);
 	// 다른사람에게 입장 소식 알리기
-	g_Room->Join(cliSession, packet);
-}
 
+	GameServerService* service = cliSession->GetService<GameServerService>();
+	if(service == nullptr)
+	{
+		xassert(true);
+		return;
+	}
+
+	Map* map = service->GetMap();
+	if(map == nullptr)
+	{
+		xassert(true);
+		return;
+	}
+
+	map->Enter(cliSession, packet);
+}
+	
 void PacketHandler::C2S_CHAT_REQ_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)
 {
 	// 다른 사람에게 채팅 정보 보내기
@@ -44,8 +61,23 @@ void PacketHandler::C2S_CHAT_REQ_Handler(shared_ptr<Session> session, std::share
 	g_Room->Broadcast(p);
 }
 
-void PacketHandler::C2S_EXIT_ROOM_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)
+void PacketHandler::C2S_EXIT_MAP_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)
 {
 	shared_ptr<ClientSession> cliSession = static_pointer_cast<ClientSession>(session);
-	g_Room->Exit(cliSession, packet);
+	
+	GameServerService* service = cliSession->GetService<GameServerService>();
+	if(service == nullptr)
+	{
+		xassert(true);
+		return;
+	}
+
+	Map* map = service->GetMap();
+	if(map == nullptr)
+	{
+		xassert(true);
+		return;
+	}
+
+	map->Enter(cliSession, packet);
 }

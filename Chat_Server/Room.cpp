@@ -22,11 +22,11 @@ void Room::Join(shared_ptr<ClientSession> session, shared_ptr<Packet> enterReqPa
 	p->SetSendTick(enterReqPacket->GetSendTick());
 #endif
 	
-	p->startPacket(Protocol::S2C_ENTER_ROOM_NOTIFY);
+	p->startPacket(Protocol::S2C_ENTER_MAP_NOTIFY);
 	string contents;
 	contents = "[입장] " + session->_userInfo.nickName + "님이 입장했습니다.";
 	p->push(contents);
-	p->endPacket(Protocol::S2C_ENTER_ROOM_NOTIFY);
+	p->endPacket(Protocol::S2C_ENTER_MAP_NOTIFY);
 
 	Broadcast(p);
 }
@@ -42,9 +42,9 @@ void Room::Exit(shared_ptr<ClientSession> session, shared_ptr<Packet> exitReqPac
 	
 	string contents;
 	contents = "[퇴장] " + session->_userInfo.nickName + "님이 퇴장했습니다.";
-	p->startPacket(Protocol::S2C_EXIT_ROOM_NOTIFY);
+	p->startPacket(Protocol::S2C_EXIT_MAP_NOTIFY);
 	p->push(contents);
-	p->endPacket(Protocol::S2C_EXIT_ROOM_NOTIFY);
+	p->endPacket(Protocol::S2C_EXIT_MAP_NOTIFY);
 
 	Broadcast(p);
 }
