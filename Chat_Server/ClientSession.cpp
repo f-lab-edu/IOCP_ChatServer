@@ -23,14 +23,14 @@ void ClientSession::OnAssemblePacket(std::shared_ptr<Packet> packet)
 	case Protocol::LATENCY_CHECK:
 		PacketHandler::LATENCY_CHECK_Handler(session, packet);
 		break;
-	case Protocol::C2S_ENTER_ROOM:
-		PacketHandler::C2S_ENTER_ROOM_Handler(session, packet);
+	case Protocol::C2S_ENTER_MAP:
+		PacketHandler::C2S_ENTER_MAP_Handler(session, packet);
 		break;
 	case Protocol::C2S_CHAT_REQ:
 		PacketHandler::C2S_CHAT_REQ_Handler(session, packet);
 		break;
-	case Protocol::C2S_EXIT_ROOM:
-		PacketHandler::C2S_EXIT_ROOM_Handler(session, packet);
+	case Protocol::C2S_EXIT_MAP:
+		PacketHandler::C2S_EXIT_MAP_Handler(session, packet);
 		break;
 	default:
 		break;

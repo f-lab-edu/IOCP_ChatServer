@@ -10,6 +10,8 @@ public:
 public:
     void Open() override;
     void Close() override;
+
+    Map* GetMap() { return _villageMap; }
 private:
 
     Map* _villageMap;

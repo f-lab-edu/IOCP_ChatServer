@@ -1,6 +1,7 @@
 #pragma once
 #include "Base.h"
 
+class ClientSession;
 class Map;
 
 class Player
@@ -16,11 +17,12 @@ public:
     int GetId(){ return _playerId; }
     void SetId(int id){ _playerId = id; }
 
-    void SetOwner(shared_ptr<ServerSession> session) { _owner = session; }
+    shared_ptr<ClientSession> GetOwner() { return _owner; }
+    void SetOwner(shared_ptr<ClientSession> session) { _owner = session; }
 private:
     int _playerId;
 
-    shared_ptr<ServerSession> _owner;
+    shared_ptr<ClientSession> _owner;
     
     Map* _currentMap;
     Pos _pos;

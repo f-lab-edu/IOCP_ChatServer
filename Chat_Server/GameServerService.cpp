@@ -11,7 +11,8 @@ GameServerService::GameServerService(const WCHAR* ip, int port, SessionFactory f
 void GameServerService::Open()
 {
     ServerService::Open();
-    _villageMap = new Map({-5,-5}, {5,5});
+    MapInfo info {"마을", {0, 0}, {-5, -5}, {5, 5}};
+    _villageMap = new Map(info);
 }
 
 void GameServerService::Close()
