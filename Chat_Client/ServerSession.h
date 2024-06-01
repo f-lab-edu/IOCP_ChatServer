@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 class Service;
+class Player;
 
 class ServerSession : public Session
 {
@@ -35,7 +36,7 @@ public:
 
 
 	string _nickName;
-
+private:
 	multimap<unsigned short, clock_t> _latencys;
 	mutex _latencyLock;
 	int latencyAvgInterval = 1000;

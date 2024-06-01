@@ -176,14 +176,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ClientSession.cpp" />
+    <ClCompile Include="GameServerService.cpp" />
+    <ClCompile Include="Map.cpp" />
     <ClCompile Include="PacketHandler.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Base.h" />
     <ClInclude Include="ClientSession.h" />
+    <ClInclude Include="GameServerService.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="PacketHandler.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
