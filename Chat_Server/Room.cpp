@@ -11,7 +11,7 @@ void Room::Broadcast(shared_ptr<Packet> packet)
 
 }
 
-void Room::Join(shared_ptr<ClientSession> session, Packet* enterReqPacket)
+void Room::Join(shared_ptr<ClientSession> session, shared_ptr<Packet> enterReqPacket)
 {
 	_sessions.insert(session);
 	
@@ -31,7 +31,7 @@ void Room::Join(shared_ptr<ClientSession> session, Packet* enterReqPacket)
 	Broadcast(p);
 }
 
-void Room::Exit(shared_ptr<ClientSession> session, Packet* exitReqPacket)
+void Room::Exit(shared_ptr<ClientSession> session, shared_ptr<Packet> exitReqPacket)
 {
 	_sessions.erase(session);
 

@@ -14,6 +14,8 @@ Service::Service(const WCHAR* ip, int port, SessionFactory factory)
     
     _iocpWorker.Init();
     _iocpWorker.SetHandle(_iocpHandle);
+
+    _logicWorker.Init();
 }
 
 Service::~Service()
@@ -31,6 +33,7 @@ void Service::Open()
     
     _isOpen = true;
     _iocpWorker.StartWork(1);
+    _logicWorker.StartWork(1);
 }
 
 void Service::Close()

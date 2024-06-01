@@ -1,5 +1,6 @@
 #pragma once
 
+class Session;
 
 #	pragma pack(push)
 #	pragma pack(1)
@@ -53,12 +54,16 @@ public:
 	}
 #endif
 	
+public: 
+	Session* GetOwner() { return _owner; }
+	void SetOwner(Session* session) { _owner = session; }
 private:
 	PacketHeader _header;
+
+	Session* _owner;
 private:
 	/* Write용 */
 	Buffer* _writeBuffer;
-	// 전송할 데이터 끝
 
 private:
 	/* Read용 */
