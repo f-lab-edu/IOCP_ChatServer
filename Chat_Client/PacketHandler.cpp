@@ -30,3 +30,9 @@ void PacketHandler::S2C_EXIT_MAP_NOTIFY_Handler(shared_ptr<Session> session, std
 	packet->pop(str);
 	cout << str << endl;
 }
+
+void PacketHandler::S2C_MOVE_NOTIFY_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)
+{
+	
+	
+}

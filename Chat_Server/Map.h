@@ -23,7 +23,8 @@ public:
     
     std::shared_ptr<Player> CreatePlayer();
 
-private:
+public:
+    std::shared_ptr<Player> FindPlayer(int playerId);
 private:
     MapInfo _mapInfo;
     std::map<int, std::shared_ptr<Player>> _joinedPlayer;

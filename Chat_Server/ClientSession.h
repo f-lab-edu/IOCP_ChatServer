@@ -1,5 +1,6 @@
 ﻿#pragma once
 class Room;
+class Player;
 
 struct UserInfo
 {
@@ -22,7 +23,12 @@ private:
 	virtual void OnAssemblePacket(std::shared_ptr<Packet> packet) override;
 
 public:
+	shared_ptr<Player> GetPlayer() { return _myPlayer; }
+	void SetPlayer(shared_ptr<Player> player) { _myPlayer = player; }
+public:
 	UserInfo _userInfo;
-
+	
+private:
+	shared_ptr<Player> _myPlayer;
 };
 

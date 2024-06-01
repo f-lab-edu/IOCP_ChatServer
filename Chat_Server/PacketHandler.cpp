@@ -81,3 +81,16 @@ void PacketHandler::C2S_EXIT_MAP_Handler(shared_ptr<Session> session, std::share
 
 	map->Enter(cliSession, packet);
 }
+
+void PacketHandler::C2S_ATTACK_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)
+{
+	shared_ptr<ClientSession> cliSession = static_pointer_cast<ClientSession>(session);
+
+	shared_ptr<Player> player = cliSession->GetPlayer();
+
+	int playerId = 0;
+	
+	packet->pop(playerId);
+	
+	player->Attack(playerId);
+}

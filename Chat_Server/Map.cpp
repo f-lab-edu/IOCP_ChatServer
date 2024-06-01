@@ -17,6 +17,7 @@ Map::~Map()
 void Map::Enter(std::shared_ptr<ClientSession> session, shared_ptr<Packet> enterReqPacket)
 {
     std::shared_ptr<Player> player = CreatePlayer();
+	session->SetPlayer(player);
     player->SetOwner(session);
     
     _joinedPlayer.emplace(player->GetId(),player);
@@ -67,6 +68,15 @@ std::shared_ptr<Player> Map::CreatePlayer()
     player->SetId(playerId++);
 
     return move(player);
+}
+
+std::shared_ptr<Player> Map::FindPlayer(int playerId)
+{
+	auto player = _joinedPlayer.find(playerId);
+	if(player == _joinedPlayer.end())
+		return nullptr;
+
+	return player->second;
 }
 
 void Map::Broadcast(shared_ptr<Packet> packet)
