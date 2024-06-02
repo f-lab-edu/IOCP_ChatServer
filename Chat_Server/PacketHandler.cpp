@@ -72,7 +72,7 @@ void PacketHandler::C2S_CHAT_REQ_Handler(shared_ptr<Session> session, std::share
 		return;
 	}
 
-	map->Broadcast(packet);
+	map->Broadcast(p);
 
 }
 
