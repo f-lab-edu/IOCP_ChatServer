@@ -40,7 +40,7 @@ public:
 	Buffer* GetRecvBuffer() { return &_recvBuffer; }
 
 	template<typename T>
-	T* GetService() { return dynamic_cast<T*>(_service); }
+	T* GetService() { return static_cast<T*>(_service); }
 	void SetService(Service* service) { _service = service; }
 
 	WCHAR _ip[INET_ADDRSTRLEN];

@@ -8,7 +8,7 @@ int main() {
 	g_Room = new Room();
 
 
-	ServerService* service = new ServerService(L"127.0.0.1",7777,[](){
+	GameServerService* service = new GameServerService(L"127.0.0.1",7777,[](){
 		return make_shared<ClientSession>();
 	});
 	service->Open();

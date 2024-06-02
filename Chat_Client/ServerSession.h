@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+
+#include "ScenarioWorker.h"
 class Service;
 class Player;
 
@@ -27,11 +29,8 @@ private:
 	void OnAssemblePacket(std::shared_ptr<Packet> packet) override;
 	
 public:
-	DWORD WINAPI ChattingLogic();
-public:
 	void AddLatency(unsigned short packetId, clock_t latency);
 	void LatencyCheck(int sleepMs);
-	
 	void MeasureLatency(unsigned short packetId);
 
 
@@ -41,5 +40,6 @@ private:
 	mutex _latencyLock;
 	int latencyAvgInterval = 1000;
 
+	ScenarioWorker _scenarioWorker;
 };
 

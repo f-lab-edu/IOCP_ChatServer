@@ -7,6 +7,7 @@
 #include "ClientSession.h"
 #include "PacketHandler.h"
 #include "Room.h"
+#include "GameServerService.h"
 
 #include "Map.h"
 #include "Player.h"

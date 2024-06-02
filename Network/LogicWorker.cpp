@@ -20,6 +20,9 @@ void LogicWorker::Work()
 {
 	while (true)
 	{
+
+		::WaitForSingleObject(_jobAddEvent, 100);
+
 		std::shared_ptr<Packet> packet = nullptr;
 
 		_assembledPackets.try_pop(packet);
@@ -31,7 +34,6 @@ void LogicWorker::Work()
 		Session* session = packet->GetOwner();
 		session->OnAssemblePacket(packet);
 		
-		::WaitForSingleObject(_jobAddEvent, 100);
 	}
 }
 

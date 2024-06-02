@@ -2,12 +2,7 @@
 #include "ServerSession.h"
 void ServerSession::DoDisconnect()
 {
-	shared_ptr<Packet> p =make_shared<Packet>(ePacketType::WRITE_PACKET);
-
-	p->startPacket(Protocol::C2S_EXIT_MAP);
-	p->endPacket(Protocol::C2S_EXIT_MAP);
-
-	Send(move(p));
+	_scenarioWorker.ScenarioEnd();
 }
 
 void ServerSession::Connect(const WCHAR* ip, int port)
@@ -32,19 +27,10 @@ void ServerSession::OnConnected()
 
 	cout << "서버 연결 완료" << endl;
 
-	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
-	p->startPacket(Protocol::C2S_ENTER_MAP);
-	p->push(_nickName);
-	p->endPacket(Protocol::C2S_ENTER_MAP);
-
-	Send(move(p));
-
-
-	GThreadManager->ThreadStart([this]()
-		{
-			ChattingLogic();
-		});
-
+	_scenarioWorker.Init();
+	_scenarioWorker.SetOwner(static_pointer_cast<ServerSession>(shared_from_this()));
+	_scenarioWorker.StartWork(1);
+	
 #ifdef LATENCY_RECORD_OPTION
 	/*GThreadManager->ThreadStart([this]()
 		{
@@ -87,36 +73,6 @@ void ServerSession::OnAssemblePacket(std::shared_ptr<Packet> packet)
 		PacketHandler::S2C_EXIT_MAP_NOTIFY_Handler(session, packet);
 		break;
 	}
-}
-
-DWORD WINAPI ServerSession::ChattingLogic()
-{
-	while (1)
-	{
-		string chat;
-
-		if (isTestMode)
-			chat = "hello";
-		else
-			cin >> chat;
-
-		if (chat.compare("q") == 0)
-		{
-			DoDisconnect();
-			break;
-		}
-
-		shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
-		p->startPacket(Protocol::C2S_CHAT_REQ);
-		p->push(chat);
-		p->endPacket(Protocol::C2S_CHAT_REQ);
-
-		Send(move(p));
-
-		Sleep(10);
-	}
-
-	return 0;
 }
 
 void ServerSession::AddLatency(unsigned short packetId, clock_t latency)

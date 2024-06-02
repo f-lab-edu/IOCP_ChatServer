@@ -174,11 +174,13 @@
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="PacketHandler.cpp" />
+    <ClCompile Include="ScenarioWorker.cpp" />
     <ClCompile Include="ServerSession.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PacketHandler.h" />
+    <ClInclude Include="ScenarioWorker.h" />
     <ClInclude Include="ServerSession.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>

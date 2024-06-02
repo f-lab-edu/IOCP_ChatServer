@@ -58,13 +58,6 @@ void PacketHandler::C2S_CHAT_REQ_Handler(shared_ptr<Session> session, std::share
 	p->startPacket(Protocol::S2C_CHAT_RES);
 	p->push(chat);
 	p->endPacket(Protocol::S2C_CHAT_RES);
-	g_Room->Broadcast(p);
-}
-
-void PacketHandler::C2S_EXIT_MAP_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)
-{
-	shared_ptr<ClientSession> cliSession = static_pointer_cast<ClientSession>(session);
-	
 	GameServerService* service = cliSession->GetService<GameServerService>();
 	if(service == nullptr)
 	{
@@ -79,7 +72,33 @@ void PacketHandler::C2S_EXIT_MAP_Handler(shared_ptr<Session> session, std::share
 		return;
 	}
 
-	map->Enter(cliSession, packet);
+	map->Broadcast(packet);
+
+}
+
+void PacketHandler::C2S_EXIT_MAP_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)
+{
+	shared_ptr<ClientSession> cliSession = static_pointer_cast<ClientSession>(session);
+	
+	int playerId = 0;
+
+	packet->pop(playerId);
+
+	GameServerService* service = cliSession->GetService<GameServerService>();
+	if(service == nullptr)
+	{
+		xassert(true);
+		return;
+	}
+
+	Map* map = service->GetMap();
+	if(map == nullptr)
+	{
+		xassert(true);
+		return;
+	}
+
+	map->Exit(playerId, packet);
 }
 
 void PacketHandler::C2S_ATTACK_Handler(shared_ptr<Session> session, std::shared_ptr<Packet> packet)

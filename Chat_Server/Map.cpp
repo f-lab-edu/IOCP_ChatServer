@@ -6,6 +6,7 @@
 class ServerSession;
 
 Map::Map(MapInfo info)
+	:_mapInfo(info)
 {
 }
 
@@ -20,7 +21,9 @@ void Map::Enter(std::shared_ptr<ClientSession> session, shared_ptr<Packet> enter
 	session->SetPlayer(player);
     player->SetOwner(session);
     
+	_playerLock.lock();
     _joinedPlayer.emplace(player->GetId(),player);
+	_playerLock.unlock();
 
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
 #ifdef LATENCY_RECORD_OPTION
@@ -38,12 +41,14 @@ void Map::Enter(std::shared_ptr<ClientSession> session, shared_ptr<Packet> enter
 
 void Map::Exit(int playerId, shared_ptr<Packet> exitReqPacket)
 {
+	_playerLock.lock();
     auto player = _joinedPlayer.find(playerId);
     xassert(player == _joinedPlayer.end());
 
 	std::shared_ptr<ClientSession> session = (*player).second->GetOwner();
     (*player).second->SetOwner(nullptr);        // referense release
     _joinedPlayer.erase(player);
+	_playerLock.unlock();
 
 	
 	shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
@@ -72,6 +77,7 @@ std::shared_ptr<Player> Map::CreatePlayer()
 
 std::shared_ptr<Player> Map::FindPlayer(int playerId)
 {
+	lock_guard<mutex> lock(_playerLock);
 	auto player = _joinedPlayer.find(playerId);
 	if(player == _joinedPlayer.end())
 		return nullptr;
@@ -81,9 +87,11 @@ std::shared_ptr<Player> Map::FindPlayer(int playerId)
 
 void Map::Broadcast(shared_ptr<Packet> packet)
 {
+	_playerLock.lock();
     for(auto& player : _joinedPlayer)
     {
         shared_ptr<ClientSession> p = player.second->GetOwner();
         p->Send(packet);
     }
+	_playerLock.unlock();
 }

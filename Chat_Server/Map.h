@@ -1,5 +1,7 @@
 #pragma once
 #include "Base.h"
+#include <mutex>
+#include <map>
 
 class Player;
 
@@ -27,5 +29,7 @@ public:
     std::shared_ptr<Player> FindPlayer(int playerId);
 private:
     MapInfo _mapInfo;
+    
+    mutex _playerLock;
     std::map<int, std::shared_ptr<Player>> _joinedPlayer;
 };
