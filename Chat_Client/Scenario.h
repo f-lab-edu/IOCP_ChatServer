@@ -2,17 +2,19 @@
 #include "Worker.h"
 
 class ServerSession;
-class ScenarioWorker : public Worker
+class Scenario
 {
 public:
-    ScenarioWorker();
-    ~ScenarioWorker() override;
+    Scenario();
+    ~Scenario();
 
 public:
-    void Init() override;
-    void Work() override;
+    void Init();
+
 	void ExecuteScenario(int scenarioId);
 
+	void StartScenario();
+	void NextScenario();
 	void ScenarioEnd();
 public:
 	void EnterMap();
@@ -29,7 +31,6 @@ private:
 	std::shared_ptr<ServerSession> _owner;
     std::vector<int> _beginScenario;
 	std::vector<int> _repeatScenario;
+	int currentScenarioIdx;
 	std::vector<int> _endScenario;
-
-	bool endFlag;
 };

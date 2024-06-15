@@ -32,8 +32,9 @@ void Map::Enter(std::shared_ptr<ClientSession> session, shared_ptr<Packet> enter
 	
 	p->startPacket(Protocol::S2C_ENTER_MAP_NOTIFY);
 	string contents;
-	contents = "[입장] " + session->_userInfo.nickName + "님이" + _mapInfo._mapName + "에 입장했습니다.";
-	p->push(contents);
+	int id = player->GetId();
+	p->push(session->_userInfo.nickName);
+	p->push(id);
 	p->endPacket(Protocol::S2C_ENTER_MAP_NOTIFY);
 
 	Broadcast(p);

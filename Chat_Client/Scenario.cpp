@@ -1,18 +1,16 @@
 #include "stdafx.h"
-#include "ScenarioWorker.h"
+#include "Scenario.h"
 
-ScenarioWorker::ScenarioWorker()
+Scenario::Scenario()
 {
 }
 
-ScenarioWorker::~ScenarioWorker()
+Scenario::~Scenario()
 {
 }
 
-void ScenarioWorker::Init()
+void Scenario::Init()
 {
-    Worker::Init();
-
     // begin
     _beginScenario.push_back(Protocol::C2S_ENTER_MAP);
 
@@ -21,36 +19,12 @@ void ScenarioWorker::Init()
 
     // end
     _endScenario.push_back(Protocol::C2S_EXIT_MAP);
+
+    ////////////////////////////////////////////////////////////
+    currentScenarioIdx = 0;
 }
 
-void ScenarioWorker::Work()
-{
-    for(int id : _beginScenario)
-        ExecuteScenario(id);
-
-    std::chrono::milliseconds sleep_ms(1000);
-	this_thread::sleep_for(sleep_ms);
-
-		
-    while(endFlag == false)
-    {
-        for(int id : _repeatScenario)
-            ExecuteScenario(id);
-
-		std::chrono::milliseconds sleep_ms(10);
-		this_thread::sleep_for(sleep_ms);
-    }
-
-	this_thread::sleep_for(sleep_ms);
-
-
-
-    for(int id : _endScenario)
-            ExecuteScenario(id);
-
-}
-
-void ScenarioWorker::ExecuteScenario(int scenarioId)
+void Scenario::ExecuteScenario(int scenarioId)
 {
     switch (scenarioId)
     {
@@ -73,7 +47,13 @@ void ScenarioWorker::ExecuteScenario(int scenarioId)
     
 }
 
-void ScenarioWorker::EnterMap()
+void Scenario::StartScenario()
+{
+    for(int id : _beginScenario)
+           ExecuteScenario(id);
+}
+
+void Scenario::EnterMap()
 {
     shared_ptr<Packet> p = make_shared<Packet>(ePacketType::WRITE_PACKET);
     p->startPacket(Protocol::C2S_ENTER_MAP);
@@ -83,7 +63,7 @@ void ScenarioWorker::EnterMap()
     GetOwner()->Send(p);
 }
 
-void ScenarioWorker::Chat()
+void Scenario::Chat()
 {
     
     string chat;
@@ -98,7 +78,7 @@ void ScenarioWorker::Chat()
     GetOwner()->Send(move(p));
 }
 
-void ScenarioWorker::ExitMap()
+void Scenario::ExitMap()
 {
     shared_ptr<Packet> p =make_shared<Packet>(ePacketType::WRITE_PACKET);
 
@@ -108,16 +88,32 @@ void ScenarioWorker::ExitMap()
     GetOwner()->Send(move(p));
 }
 
-void ScenarioWorker::Move()
+void Scenario::Move()
+{
+    shared_ptr<Packet> p =make_shared<Packet>(ePacketType::WRITE_PACKET);
+    p->startPacket(Protocol::C2S_MOVE);
+
+    int x = rand() % 3 - 1;
+    int y = rand() % 3 - 1;
+    p->push(x);
+    p->push(y);
+    p->endPacket(Protocol::C2S_MOVE);
+
+    GetOwner()->Send(p);
+}
+
+void Scenario::Attack()
 {
 }
 
-void ScenarioWorker::Attack()
+void Scenario::ScenarioEnd()
 {
+     for(int id : _endScenario)
+             ExecuteScenario(id);
 }
 
-void ScenarioWorker::ScenarioEnd()
+void Scenario::NextScenario()
 {
-    endFlag = true;
+   ExecuteScenario(_repeatScenario[currentScenarioIdx]);
+    currentScenarioIdx = (currentScenarioIdx + 1) % _repeatScenario.size();
 }
-

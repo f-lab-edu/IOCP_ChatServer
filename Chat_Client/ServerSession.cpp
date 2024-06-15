@@ -2,7 +2,7 @@
 #include "ServerSession.h"
 void ServerSession::DoDisconnect()
 {
-	_scenarioWorker.ScenarioEnd();
+	_scenario.ScenarioEnd();
 }
 
 void ServerSession::Connect(const WCHAR* ip, int port)
@@ -10,6 +10,7 @@ void ServerSession::Connect(const WCHAR* ip, int port)
 	_nickName = "A_" + to_string(GetSessionId());
 
 	Session::Connect(ip, port);
+
 }
 
 void ServerSession::Send(shared_ptr<Packet> p)
@@ -27,9 +28,10 @@ void ServerSession::OnConnected()
 
 	cout << "서버 연결 완료" << endl;
 
-	_scenarioWorker.Init();
-	_scenarioWorker.SetOwner(static_pointer_cast<ServerSession>(shared_from_this()));
-	_scenarioWorker.StartWork(1);
+
+	_scenario.Init();
+	_scenario.SetOwner(static_pointer_cast<ServerSession>(shared_from_this()));
+	_scenario.StartScenario();
 	
 #ifdef LATENCY_RECORD_OPTION
 	/*GThreadManager->ThreadStart([this]()
@@ -73,6 +75,8 @@ void ServerSession::OnAssemblePacket(std::shared_ptr<Packet> packet)
 		PacketHandler::S2C_EXIT_MAP_NOTIFY_Handler(session, packet);
 		break;
 	}
+
+	_scenario.NextScenario();
 }
 
 void ServerSession::AddLatency(unsigned short packetId, clock_t latency)

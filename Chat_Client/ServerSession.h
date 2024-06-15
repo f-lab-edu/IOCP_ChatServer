@@ -1,10 +1,15 @@
 #pragma once
 #include <string>
+#include "Scenario.h"
 
-#include "ScenarioWorker.h"
 class Service;
-class Player;
 
+struct tmpPlayerInfo
+{
+	int playerId;
+	int x;
+	int y;
+};
 class ServerSession : public Session
 {
 public:
@@ -33,6 +38,8 @@ public:
 	void LatencyCheck(int sleepMs);
 	void MeasureLatency(unsigned short packetId);
 
+	tmpPlayerInfo playerInfo;
+	vector<int> _enterPlayerId;
 
 	string _nickName;
 private:
@@ -40,6 +47,6 @@ private:
 	mutex _latencyLock;
 	int latencyAvgInterval = 1000;
 
-	ScenarioWorker _scenarioWorker;
+	Scenario _scenario;
 };
 
